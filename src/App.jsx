@@ -11,6 +11,7 @@ import authservice from './firebase/Authentication'
 import { useLocation } from 'react-router-dom';
 import SignUp from './components/Signup';
 import HomePage from './components/HomePage';
+import ExpenseTracker from './components/ExpenseTracker/ExpenseTracker'
 
 
 function AppContent() {
@@ -44,6 +45,7 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/expense-tracker" element={<ExpenseTracker />} />
         {/* Add other routes here */}
       </Routes>
     </div>
