@@ -1,13 +1,13 @@
 import React from 'react'
 import { PencilIcon, TrashIcon } from 'lucide-react';
-function Right({expenses,totalAmount,...prop}) {
+function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}) {
   return (
     <div className="w-3/4 p-4 bg-white rounded-lg shadow-md ml-4">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Transactions</h2>
                 <div className="flex items-center space-x-4">
-                    <p className="text-gray-600">Amount - {totalAmount} ₹</p>
-                    <button className="bg-red-200 px-4 py-2 rounded-md hover:bg-red-300 transition duration-300">
+                    <p className="text-gray-600">Amount - {parseInt(totalAmount,10)} ₹</p>
+                    <button onClick={onAddExpense} className="bg-red-200 px-4 py-2 rounded-md hover:bg-red-300 transition duration-300">
                         Add Expense
                     </button>
                 </div>
@@ -30,10 +30,10 @@ function Right({expenses,totalAmount,...prop}) {
                             <td className="py-3">{expense.category}</td>
                             <td className="py-3">₹ {expense.amount}</td>
                             <td className="py-3 flex items-center">
-                                <button className="text-blue-500 hover:text-blue-600 mr-2">
+                                <button onClick={()=>onEditExpense(expense)} className="text-blue-400  hover:text-blue-700 hover:cursor-pointer- mr-2">
                                     <PencilIcon size={18} />
                                 </button>
-                                <button className="text-red-500 hover:text-red-600">
+                                <button onClick={()=>onDeleteExpense(expense)} className="text-red-400 hover:text-red-700 hover:cursor-pointer">
                                     <TrashIcon size={18} />
                                 </button>
                             </td>
@@ -41,6 +41,7 @@ function Right({expenses,totalAmount,...prop}) {
                     ))}
                 </tbody>
             </table>
+
         </div>
   )
 }

@@ -39,7 +39,7 @@ function Header() {
           <li key="home"><Link to="/" className="text-xl text-gray-600 hover:text-gray-950">Home</Link></li>
           <li key="Events"><Link to="#" className="text-xl text-gray-600 hover:text-gray-900">Events</Link></li>
           {authStatus ? (
-            <li key=""><Link to="#" className="text-xl text-gray-600 hover:text-gray-900">Dashboard</Link></li>
+            <li ><Link to="/dashboard" className="text-xl text-gray-600 hover:text-gray-900">Dashboard</Link></li>
           ) : (
             <li><Link to="#" className="text-xl text-gray-600 hover:text-gray-900">Service</Link></li>
           )}
