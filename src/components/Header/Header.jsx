@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from "react-router-dom";
-import userImage from '../../assets/user-circle.svg';
+
 import logoutImg from '../../assets/logout-icon.svg';
 import { logout } from '../../store/authSlice';
 import authservice from '../../firebase/Authentication';
-
+import { UserIcon } from 'lucide-react';
 
 function Header() {
   const userData = useSelector((state) => state.auth.userData);
@@ -18,7 +18,7 @@ function Header() {
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const closeDropdown = () => setDropdownOpen(false);
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     try {
       await authservice.logout().then(() => {
         dispatch(logout());
@@ -31,13 +31,13 @@ function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-lg sticky top-0 z-50">
       <nav className="px-4 py-3 flex justify-between shadow-sm items-center">
         <Link to="/" className="text-2xl font-bold text-black no-underline">BoothBiz</Link>
 
         <ul className="flex space-x-10">
           <li key="home"><Link to="/" className="text-xl text-gray-600 hover:text-gray-950">Home</Link></li>
-          <li key="Events"><Link to="#" className="text-xl text-gray-600 hover:text-gray-900">Events</Link></li>
+          <li key="Events"><Link to="/events" className="text-xl text-gray-600 hover:text-gray-900">Events</Link></li>
           {authStatus ? (
             <li ><Link to="/dashboard" className="text-xl text-gray-600 hover:text-gray-900">Dashboard</Link></li>
           ) : (
@@ -49,22 +49,26 @@ function Header() {
         {authStatus ? (
           <div className="relative">
             <button onClick={toggleDropdown} className="flex items-center text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100">
-              {userData?.email || "User"}
-              <img src={userImage} alt="User" className="w-10 h-8 ml-2" />
+              
+              <div className="flex items-center gap-5 w-40 text-gray-700 px-4 py-2 rounded-lg border-2 border-red-200">
+                <UserIcon size={20} className="text-red-400" />
+                {userData?.userName || "User"}
+              </div>
+              
             </button>
             {dropdownOpen && (
               <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
                 <Link to="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100" onClick={closeDropdown}>Account Details</Link>
                 <button onClick={handleLogout} className="w-full text-left flex gap-3 py-2 px-4 text-gray-700 hover:bg-gray-100">
-                  Logout <img src={logoutImg} alt="Logout" />
+                  Logout <img className='items-end' src={logoutImg} alt="Logout" />
                 </button>
               </div>
             )}
           </div>
         ) : (
           <div className="flex items-center space-x-2">
-            <Link to="/signin" className="px-4 py-2 text-purple-600 border border-purple-600 rounded hover:bg-slate-200">Sign In</Link>
-            <Link to="/signup" className="px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700">Sign Up</Link>
+            <Link to="/signin" className="px-4 py-2 text-black border border-black rounded hover:bg-slate-200">Sign In</Link>
+            <Link to="/signup" className="px-4 py-2 text-black bg-red-300 rounded hover:bg-red-400">Sign Up</Link>
           </div>
         )}
       </nav>

@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import stall1 from '../../assets/stall-1.jpeg';
 import stall2 from '../../assets/stall-2.jpeg';
 import stall3 from '../../assets/stall-3.jpeg';
 import DashboardImg from './DashboardImage';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 const Dashboard = () => {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [stallName, setStallName] = useState('');
     const navigate = useNavigate()
+
+    const authStatus = useSelector((state)=>(state.auth.status))
     const Img = [
         { src: stall1, title: "Stall 1" },
         { src: stall2, title: "Stall 2" },
@@ -28,7 +32,11 @@ const Dashboard = () => {
         setIsPopupVisible(false);
         setStallName('');
     };
-
+    useEffect(() => {
+        if (!authStatus) {
+            navigate('/signin');
+        }
+    }, [authStatus, navigate]);
     return (
         <main className="flex flex-col items-center m-auto mt-10 max-w-6xl px-5">
             <div className="grid mt-12 grid-cols-3 gap-5 w-full">
@@ -38,7 +46,7 @@ const Dashboard = () => {
                     </div>
                 </div>
                 {
-                    Img.map((ImageObj,index) => (<DashboardImg key={index} src={ImageObj.src} onClick={() => (navigate('/analysis-page'))} title={ImageObj.title} />))
+                    Img.map((ImageObj,index) => (<DashboardImg key={index} src={ImageObj.src} onClick={() => (navigate('/stall-details'))} title={ImageObj.title} />))
                 }
                 {/* <DashboardImg src={stall1} onClick={()=>(navigate('/analysis-page'))} title={"Stall1"}/>
                 <DashboardImg src={stall2} onClick={()=>(navigate('/analysis-page'))} title={"Stall2"}/>

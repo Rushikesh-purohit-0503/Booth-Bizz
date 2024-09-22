@@ -53,7 +53,7 @@ const AddExpensePopup = ({ isOpen, onClose, onSubmit }) => {
 
           <button 
             type="submit" 
-            className="bg-[#f89b94] text-white py-2 mt-2 rounded hover:bg-pink-500 transition duration-300"
+            className="bg-[#f89b94] text-white py-2 mt-2 rounded hover:bg-red-400 transition duration-300"
           >
             Add Expense
           </button>

@@ -1,17 +1,19 @@
-import React from "react";
+import React,{useState} from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { login } from "../store/authSlice";
-import AuthService from "../firebase/Authentication";
+import { login } from "../../store/authSlice";
+import AuthService from "../../firebase/Authentication";
 import { Link, useNavigate } from "react-router-dom";
-import googleImg from "../assets/googleImg.png"
+import googleImg from "../../assets/googleImg.png"
+import AuthHeader from "./AuthHeader";
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate()
-
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onSubmit = async (data) => {
+    setErrorMessage('')
     try {
       const userCredential = await AuthService.login({
         email: data.email,
@@ -23,18 +25,24 @@ const SignIn = () => {
       const{uid,email}=userCredential.user;
       dispatch(login({ userData: {uid,email} }));
       navigate('/')
-      }else{
-        console.error("userCredential does not contain user data.");
-        
       }
     } catch (error) {
-      console.error("Error signing in", error);
+      if (error.code === 'auth/wrong-password') {
+        setErrorMessage('Incorrect password. Please try again.');
+      } else if (error.code === 'auth/user-not-found') {
+        setErrorMessage('No account found with this email.');
+      } else if (error.code === 'auth/invalid-email') {
+        setErrorMessage('Invalid email format.');
+      } else {
+        setErrorMessage('Failed to sign in. Please try again later.');
+      }
     }
   };
 
   const handleGoogleSignIn = async () => {
     try {
-      const userCredential = await AuthService.authentication(); // Google Sign-In
+      const userCredential = await AuthService.authentication();
+       // Google Sign-In
       dispatch(login({ userData: userCredential }));
       navigate('/')
     } catch (error) {
@@ -44,16 +52,7 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-white flex justify-between items-center p-4 shadow-sm">
-        <div className="text-2xl font-bold text-black">
-          <Link to="/" className="no-underline text-black">BoothBiz</Link>
-        </div>
-        <h2 className="text-2xl font-bold text-center mx-auto" >
-          Elevate Your Business on Stalls with{" "}
-          <span className="  bg-gradient-to-r from-pink-500 to-yellow-500 bg-clip-text text-transparent" >Seamless Management</span>{" "}
-          and Smart Sales.
-        </h2>
-      </header>
+      <AuthHeader/>
       <main className="flex-grow flex items-center justify-center px-4">
         <div className="max-w-md w-full">
 
@@ -83,16 +82,17 @@ const SignIn = () => {
               />
               {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
             </div>
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
             <button
               type="submit"
-              className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition duration-300"
+              className="w-full bg-red-300 text-black py-2 rounded hover:bg-red-400 transition duration-300"
             >
-              Login
+              Sign In
             </button>
             <div className="mt-4 text-center">
               <p className="text-sm">
                 Don't have an account?{" "}
-                <Link to="/signup" className="text-purple-600 hover:underline">
+                <Link to="/signup" className="text-red-400 font-medium hover:underline">
                   Sign up {" "}
                 </Link>
                 
@@ -110,13 +110,14 @@ const SignIn = () => {
             <div className="mt-4">
               <button
                 onClick={handleGoogleSignIn}
-                className="w-full flex justify-center items-center bg-purple-600 text-white py-2 rounded transition duration-300 hover:bg-purple-700"
+                className="w-full flex justify-center items-center bg-red-300 text-black py-2 rounded transition duration-300 hover:bg-red-400"
               >
                 <img src={googleImg} alt="Google sign-in" className="w-6 h-6 mr-2" /> {/* Adjust image size and add margin-right */}
                 Continue with Google{/* Text label for the button */}
+             
               </button>
             </div>
-
+            
           </form>
 
         </div>

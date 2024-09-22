@@ -6,14 +6,17 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { useDispatch } from 'react-redux'
 import { auth } from './firebase/conf'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SignIn from './components/Signin';
-import authservice from './firebase/Authentication'
+import SignIn from './components/AuthLaouts/Signin';
+
 import { useLocation } from 'react-router-dom';
-import SignUp from './components/Signup';
+import SignUp from './components/AuthLaouts/Signup';
 import HomePage from './components/HomePage';
 import ExpenseTracker from './components/ExpenseTracker/ExpenseTracker'
 import Dashboard from './components/Dashboard/Dashboard'
-import AnalysisPage from './components/Dashboard/AnalysisPage'
+import AnalysisPage from './components/Dashboard/Analysis-Page/AnalysisPage'
+import EventPage from './components/Event/EventPage'
+import Product from './components/Product/Product'
+import POSSystem from './components/POSSystem/POSSystem'
 
 
 function AppContent() {
@@ -25,8 +28,8 @@ function AppContent() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { uid, email } = user;
-        dispatch(login({ userData: { uid, email } }));
+        const { uid, email , displayName } = user;
+        dispatch(login({ userData: { uid, email ,userName: displayName } }));
       } else {
         dispatch(logout());
       }
@@ -40,6 +43,7 @@ function AppContent() {
     return <div>Loading...</div>; // Or a proper loading component
   }
 
+
   return (
     <div>
       {!isAuthPage && <Header />}
@@ -49,7 +53,10 @@ function AppContent() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/expense-tracker" element={<ExpenseTracker />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/analysis-page" element={<AnalysisPage/>} />
+        <Route path="/stall-details" element={<AnalysisPage />} />
+        <Route path="/events" element={<EventPage />} />
+        <Route path='/product' element={<Product />} />
+        <Route path='/pos' element={<POSSystem />} />
         {/* Add other routes here */}
       </Routes>
     </div>

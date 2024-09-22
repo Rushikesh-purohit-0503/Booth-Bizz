@@ -26,7 +26,7 @@ function HomePage() {
             </p>
             <Link
               to="/signin"
-              className="inline-block bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300"
+              className="inline-block bg-red-300 text-black px-8 py-3 rounded-lg font-semibold hover:bg-red-400 transition duration-300"
             >
               Explore
             </Link>

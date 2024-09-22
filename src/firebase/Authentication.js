@@ -1,56 +1,80 @@
-import { auth, provider, signInWithPopup } from "./conf";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword , onAuthStateChanged, getAuth ,signOut} from "firebase/auth";
-class authService {
+import { auth, db, provider, signInWithPopup, updateProfile } from "./conf";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore"; // Import setDoc and doc
+class AuthService {
   async authentication() {
     try {
-      const userCredentials=await signInWithPopup(auth, provider);
+      const userCredentials = await signInWithPopup(auth, provider);
+
       return userCredentials.user;
     } catch (error) {
-      console.error("Error Signing in", error);
+      console.error("Error Signing in with Google", error);
+      throw error; // Re-throw the error to handle it where this method is called
     }
   }
-  async createAccount({ email, password }) {
+
+  async createAccount({ userName ,email, password }) {
     try {
       const userAccount = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      return userAccount.user;
+      const user=userAccount.user
+      await updateProfile(user, { displayName: userName });
+
+      // Step 3: Save user data to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        username: userName,
+      });
+      return user;
     } catch (error) {
       console.error("Error creating account", error);
+      throw error;
     }
   }
 
-  async login({email,password}){
+  async login({ email, password }) {
     try {
-      const auth=new getAuth()
-      console.log("Current auth user: ",auth.currentUser);
-      
-      const userCredentials = await signInWithEmailAndPassword(auth,email,password);
+      const userCredentials = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       return userCredentials;
     } catch (error) {
-      console.error("Error login", error);
+      console.error("Error logging in", error);
+      throw error;
     }
   }
 
-  async logout(){
+  async logout() {
     try {
       await signOut(auth);
       console.log("User logged out successfully");
     } catch (error) {
-      console.error("Error logout", error);
+      console.error("Error logging out", error);
+      throw error;
     }
   }
-  async getCurrentUser(){
-    return  auth.currentUser;
+
+  async getCurrentUser() {
+    return auth.currentUser;
   }
-  
+
   onAuthChange(callback) {
     onAuthStateChanged(auth, (user) => {
       callback(user);
     });
   }
 }
-const authservice = new authService();
-export default authservice;
+
+const authService = new AuthService();
+export default authService;

@@ -1,14 +1,19 @@
 import React from 'react'
 
-function Left({onClick}) {
+function Left({onClickExpensetaker,onStallClick,onProductClick}) {
+
+
   return (
-    <div className="w-1/4 p-4 bg-white rounded-lg shadow-md">
-    <h1 className="text-2xl font-bold mb-6">Stall 1</h1>
-    <button onClick={(onClick)} className="block w-full text-left bg-red-200 text-black px-4 py-2 rounded-xl hover:bg-red-300 transition duration-300 mb-4">
+    <div className="w-1/4 p-4 bg-white rounded-lg  h-screen shadow-md">
+    <h1 className="text-2xl text-center font-bold mb-6">Stall 1</h1>
+    <button onClick={(onStallClick)} className="block w-full text-left  text-black px-4 py-2 bg-red-300 rounded-lg hover:bg-red-400  transition duration-300 mb-4">
+        Stall Details
+    </button>
+    <button onClick={(onClickExpensetaker)} className="block w-full text-left  text-black px-4 py-2 bg-red-300 rounded-lg hover:bg-red-400  transition duration-300 mb-4">
         Expense Tracker
     </button>
-    <button onClick={onClick} className="block w-full text-left bg-red-200 text-black px-4 py-2 rounded-xl hover:bg-red-300 transition duration-300">
-        POS Tracker
+    <button onClick={onProductClick} className="block w-full text-left  text-black px-4 py-2 bg-red-300 rounded-lg hover:bg-red-400 transition duration-300 mb-4">
+        Product
     </button>
 </div>
   )
