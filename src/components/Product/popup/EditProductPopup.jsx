@@ -43,7 +43,7 @@ const EditProductPopup = ({ isOpen, onClose, onSubmit, existingData }) => {
 
                     <button 
                         type="submit" 
-                        className="bg-[#f89b94] text-white py-2 mt-2 rounded hover:bg-[#f87a6e] transition duration-300"
+                        className="bg-[#f89b94] text-gray-800 py-2 mt-2 rounded hover:bg-[#f87a6e] transition duration-300"
                     >
                         Save Changes
                     </button>

@@ -6,13 +6,15 @@ import EditProductPopup from './popup/EditProductPopup';
 import Left from '../ExpenseTracker/Left'; 
 import RightProduct from './RightProduct'; 
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setProducts as reduxsetProducts,addProduct,editProduct,deleteProduct } from '../../store/productSlice';
 function Product() {
     const [products, setProducts] = useState([
         { name: 'Product 1', price: 100, quantity: 10 },
         { name: 'Product 2', price: 200, quantity: 20 },
     ]);
-    const reduxProduct = useSelector(state => state.product);
+    const dispatch = useDispatch()
+    const reduxProducts = useSelector(state => state.product);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -20,15 +22,20 @@ function Product() {
     const [productToDelete, setProductToDelete] = useState(null);
     const navigate = useNavigate()
     const authStatus = useSelector((state) => (state.auth.status))
+    const stall = useSelector((state)=>state.stall)
     useEffect(() => {
         if (!authStatus) {
             navigate('/signin')
         }
     }, [authStatus, navigate])
+
+
+
+
     // Save products to localStorage whenever the products state changes
-    useEffect(() => {
-        localStorage.setItem('products', JSON.stringify(products));
-    }, [products]);
+ 
+
+
     // Retrieve products from localStorage on component mount
     useEffect(() => {
         const storedProducts = localStorage.getItem('products');
@@ -37,10 +44,26 @@ function Product() {
         }
     }, []);
 
+    useEffect(() => {
+        const storedProducts = localStorage.getItem('products');
+        if (storedProducts) {
+            dispatch(reduxsetProducts(JSON.parse(storedProducts)))
+        }
+    }, [dispatch]);
+        
+    useEffect(() => {
+        localStorage.setItem('products', JSON.stringify(reduxProducts));
+    }, [reduxProducts]);
+
+
+    useEffect(() => {
+        localStorage.setItem('products', JSON.stringify(products));
+    }, [products]);
 
 
     const handleAddProduct = (data) => {
         const newProducts = [...products, data];
+        dispatch(addProduct(data))
         setProducts(newProducts);
         setIsPopupOpen(false);  // Close the Add Product popup
     };
@@ -49,6 +72,7 @@ function Product() {
         const updatedProducts = products.map((product) =>
             product.name === editingProduct.name ? data : product
         );
+        dispatch(editProduct(data))
         setProducts(updatedProducts);
         setIsEditPopupOpen(false);  // Close the Edit Product popup
         setEditingProduct(null);
@@ -56,6 +80,7 @@ function Product() {
 
     const handleDeleteProduct = () => {
         const updatedProducts = products.filter((product) => product !== productToDelete);
+        dispatch(deleteProduct(productToDelete))
         setProducts(updatedProducts);
         setIsDeletePopupOpen(false);  // Close the Delete Product popup
         setProductToDelete(null);
@@ -71,15 +96,18 @@ function Product() {
         setIsDeletePopupOpen(true);
     };
 
+    const totalAmount = products.reduce((total, product) => (total + Number(product.price)), 0);
+
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
-            <Left onStallClick={() => navigate('/stall-details')} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))} onProductClick={() => navigate('/product')} onClickExpensetaker={() => (navigate('/expense-tracker'))} />
+            <Left stallName={stall.stallName} onStallClick={() => navigate('/stall-details')} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))} onProductClick={() => navigate('/product')} onClickExpensetaker={() => (navigate('/expense-tracker'))} />
             <RightProduct
                 products={products}
                 onAddProduct={() => setIsPopupOpen(true)}
                 onEditProduct={openEditPopup}
                 onDeleteProduct={openDeletePopup}
                 onStartPOS={() => (navigate('/pos'))}
+                totalAmount={totalAmount}
             />
             {/* Popups */}
             {isPopupOpen && (

@@ -22,7 +22,7 @@ function ExpenseTracker() {
     const [editingExpense, setEditingExpense] = useState(null);
     const [expenseToDelete, setExpenseToDelete] = useState(null);
     const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount),0);
-
+    const stall = useSelector((state)=>state.stall)
 
     useEffect(()=>{
         if(!authStatus){
@@ -75,7 +75,7 @@ function ExpenseTracker() {
 
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
-            <Left onStallClick={()=>(navigate('/stall-details'))} onProductClick={()=>(navigate('/product'))} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}/>
+            <Left stallName={stall.stallName} onStallClick={()=>(navigate('/stall-details'))} onProductClick={()=>(navigate('/product'))} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}/>
             <Right
                 expenses={expenses}
                 totalAmount={totalAmount}

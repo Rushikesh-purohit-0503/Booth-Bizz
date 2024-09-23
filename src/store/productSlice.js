@@ -18,9 +18,16 @@ const productSlice = createSlice({
     },
     deleteProduct: (state, action) => {
       return state.filter(product => product.name !== action.payload.name);
-    }
+    },
+    updateProductQuantity: (state, action) => {
+      const { name, quantity } = action.payload;
+      const product = state.find(p => p.name === name);
+      if (product) {
+        product.quantity = quantity;
+      }
+    },
   }
 });
 
-export const { setProducts, addProduct, editProduct, deleteProduct } = productSlice.actions;
+export const { setProducts, addProduct, editProduct, deleteProduct, updateProductQuantity } = productSlice.actions;
 export default productSlice.reducer;

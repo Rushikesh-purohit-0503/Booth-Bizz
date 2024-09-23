@@ -4,30 +4,39 @@ import stall2 from '../../assets/stall-2.jpeg';
 import stall3 from '../../assets/stall-3.jpeg';
 import DashboardImg from './DashboardImage';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { setStallName as reduxsetStallName } from '../../store/stallnameSlice';
+import AddStallPopup from './addstallpopup/AddStallPopup';
 const Dashboard = () => {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [stallName, setStallName] = useState('');
+    const [stallDetails, setStallDetails] = useState([]);
     const navigate = useNavigate()
-
-    const authStatus = useSelector((state)=>(state.auth.status))
+    const dispatch = useDispatch()
+    const authStatus = useSelector((state) => (state.auth.status))
     const Img = [
         { src: stall1, title: "Stall 1" },
         { src: stall2, title: "Stall 2" },
         { src: stall3, title: "Stall 3" }]
 
-
     const handleAddStallClick = () => {
         setIsPopupVisible(true);
     };
-
-    const handleSaveCard = () => {
-        console.log('Stall name:', stallName);
+    const handleClick = (stall) => {
+        dispatch(reduxsetStallName(stall))
+        localStorage.setItem('stall', JSON.stringify(stall));
+        navigate('/stall-details')
+    }
+    const handleSaveCard = (details) => {
+        const imagePath = Img[0].src; 
+        console.log(imagePath)
+        setStallDetails([...stallDetails, { 
+          ...details, 
+          image: imagePath 
+        }]); 
         setIsPopupVisible(false);
-        setStallName('');
-    };
-
+      };
+    
     const handleCancelPopup = () => {
         setIsPopupVisible(false);
         setStallName('');
@@ -46,8 +55,18 @@ const Dashboard = () => {
                     </div>
                 </div>
                 {
-                    Img.map((ImageObj,index) => (<DashboardImg key={index} src={ImageObj.src} onClick={() => (navigate('/stall-details'))} title={ImageObj.title} />))
+                    Img.map((ImageObj, index) => (<DashboardImg key={index} src={ImageObj.src} title={ImageObj.title} onClick={() => (handleClick({ name: ImageObj.title, src: ImageObj.src }))} />))
                 }
+                {stallDetails.map((details, index) => (
+                    <DashboardImg
+                        key={`dynamic-${index}`}
+                        src={details.image}
+                        onClick={() => navigate('/stall-details')}
+                        title={details.stallName}
+                        stallNumber={details.stallNumber}
+                        event={details.eventName}
+                    />
+                ))}
                 {/* <DashboardImg src={stall1} onClick={()=>(navigate('/analysis-page'))} title={"Stall1"}/>
                 <DashboardImg src={stall2} onClick={()=>(navigate('/analysis-page'))} title={"Stall2"}/>
                 <DashboardImg src={stall3} onClick={()=>(navigate('/analysis-page'))} title={"Stall3"}/>
@@ -72,6 +91,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
+             {isPopupVisible && <AddStallPopup onSave={handleSaveCard} onCancel={handleCancelPopup} />}
         </main>
     );
 };

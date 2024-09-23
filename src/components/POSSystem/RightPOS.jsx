@@ -15,6 +15,7 @@ function RightPOS({ products, incrementQuantity, decrementQuantity, totalAmount,
             className="border border-gray-300 p-2 rounded w-72"
             placeholder="Enter customer's name"
           />
+         
         </div>
         <button
           className="bg-red-300 text-black py-2 px-4 rounded hover:bg-red-400 transition duration-300"

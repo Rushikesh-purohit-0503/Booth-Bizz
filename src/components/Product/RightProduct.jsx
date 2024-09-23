@@ -1,7 +1,7 @@
 import React from 'react';
 import { PencilIcon, TrashIcon } from 'lucide-react';
 
-function RightProduct({ products, onAddProduct, onEditProduct, onDeleteProduct, onStartPOS }) {
+function RightProduct({ products, onAddProduct, totalAmount,onEditProduct, onDeleteProduct, onStartPOS }) {
   if (!products || !Array.isArray(products)) {
     return <div>No products available</div>; // Handling if products are not available
   }
@@ -10,7 +10,7 @@ function RightProduct({ products, onAddProduct, onEditProduct, onDeleteProduct, 
     
     <div className="flex-1 p-5 bg-white shadow-md rounded-lg  ml-4">
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-2xl font-semibold">Catalogue</h1>
+        <h1 className="text-2xl text-gray-600 font-semibold">Catalogue</h1>
         <div>
           <button
             className="bg-red-300 text-black py-2 px-4 rounded hover:bg-red-400 transition duration-300 mr-2"
@@ -28,7 +28,7 @@ function RightProduct({ products, onAddProduct, onEditProduct, onDeleteProduct, 
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-500">
-          <thead className="text-sm text-gray-700 uppercase bg-gray-50">
+          <thead className="text-sm text-gray-600 uppercase bg-gray-50">
             <tr>
               <th className="py-3 px-6">Name</th>
               <th className="py-3 px-6">Price</th>
@@ -60,6 +60,9 @@ function RightProduct({ products, onAddProduct, onEditProduct, onDeleteProduct, 
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="mt-5">
+        <h2 className="text-xl text-gray-600 font-semibold">Total Amount(per unit): &#8377; {totalAmount}</h2>
       </div>
     </div>
   );
