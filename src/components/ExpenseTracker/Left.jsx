@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Left({onClickExpensetaker,onStallClick,onProductClick}) {
+function Left({onClickExpensetaker,onStallClick,onProductClick,onClickSalesAnalysis}) {
 
 
   return (
@@ -14,6 +14,9 @@ function Left({onClickExpensetaker,onStallClick,onProductClick}) {
     </button>
     <button onClick={onProductClick} className="block w-full text-left  text-black px-4 py-2 bg-red-300 rounded-lg hover:bg-red-400 transition duration-300 mb-4">
         Product
+    </button>
+    <button onClick={onClickSalesAnalysis} className="block w-full text-left  text-black px-4 py-2 bg-red-300 rounded-lg hover:bg-red-400 transition duration-300 mb-4">
+        Sales & Analysis
     </button>
 </div>
   )

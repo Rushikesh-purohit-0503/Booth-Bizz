@@ -22,8 +22,8 @@ const SignIn = () => {
       console.log("userCredential:", userCredential);
 
       if(userCredential && userCredential.user){
-      const{uid,email}=userCredential.user;
-      dispatch(login({ userData: {uid,email} }));
+      const{uid,email,displayName}=userCredential.user;
+      dispatch(login({ userData: {uid,email,userName:displayName} }));
       navigate('/')
       }
     } catch (error) {

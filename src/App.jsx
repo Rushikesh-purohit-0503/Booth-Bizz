@@ -6,10 +6,10 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { useDispatch } from 'react-redux'
 import { auth } from './firebase/conf'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SignIn from './components/AuthLaouts/Signin';
+import SignIn from './components/AuthLayouts/Signin';
 
 import { useLocation } from 'react-router-dom';
-import SignUp from './components/AuthLaouts/Signup';
+import SignUp from './components/AuthLayouts/Signup';
 import HomePage from './components/HomePage';
 import ExpenseTracker from './components/ExpenseTracker/ExpenseTracker'
 import Dashboard from './components/Dashboard/Dashboard'
@@ -17,6 +17,7 @@ import AnalysisPage from './components/Dashboard/Analysis-Page/AnalysisPage'
 import EventPage from './components/Event/EventPage'
 import Product from './components/Product/Product'
 import POSSystem from './components/POSSystem/POSSystem'
+import SalesAnalysis from './components/SalesAnalysis/SalesAnalysis'
 
 
 function AppContent() {
@@ -57,6 +58,7 @@ function AppContent() {
         <Route path="/events" element={<EventPage />} />
         <Route path='/product' element={<Product />} />
         <Route path='/pos' element={<POSSystem />} />
+        <Route path='/sales-analysis' element={<SalesAnalysis />} />
         {/* Add other routes here */}
       </Routes>
     </div>

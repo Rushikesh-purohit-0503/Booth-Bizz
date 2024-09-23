@@ -10,8 +10,8 @@ function POSSystem() {
  
 
   const [products, setProducts] = useState([
-    { name: 'Product 1', price: 100, quantity: 1 },
-    { name: 'Product 2', price: 200, quantity: 1 },
+    { name: 'Product 1', price: 100, quantity: 0 },
+    { name: 'Product 2', price: 200, quantity: 0},
   ]);
   const navigate=useNavigate()
   const authStatus=useSelector((state)=>(state.auth.status))
@@ -47,7 +47,7 @@ function POSSystem() {
 
   return (
     <div className="flex min-h-screen bg-gray-50 p-6 ">
-      <Left onStallClick={()=>(navigate('/stall-details'))} onClickExpensetaker={()=>(navigate('/expense-tracker'))} onProductClick={()=>(navigate('/product'))} />
+      <Left onStallClick={()=>(navigate('/stall-details'))} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))} onClickExpensetaker={()=>(navigate('/expense-tracker'))} onProductClick={()=>(navigate('/product'))} />
       <RightPOS
         products={products}
         incrementQuantity={incrementQuantity}

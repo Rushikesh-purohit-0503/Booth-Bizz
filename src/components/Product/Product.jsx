@@ -73,7 +73,7 @@ function Product() {
 
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
-            <Left onStallClick={() => navigate('/stall-details')} onProductClick={() => navigate('/product')} onClickExpensetaker={() => (navigate('/expense-tracker'))} />
+            <Left onStallClick={() => navigate('/stall-details')} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))} onProductClick={() => navigate('/product')} onClickExpensetaker={() => (navigate('/expense-tracker'))} />
             <RightProduct
                 products={products}
                 onAddProduct={() => setIsPopupOpen(true)}

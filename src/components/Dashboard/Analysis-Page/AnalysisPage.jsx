@@ -25,7 +25,7 @@ function AnalysisPage() {
       <Left
         onClickExpensetaker={onExpenseClick}
         onProductClick={()=>(navigate('/product'))}
-        
+        onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}
       />
      <RightAnalysis src={stall1} product={product} eventName={eventName} location={location}/>
     </div>

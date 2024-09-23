@@ -75,7 +75,7 @@ function ExpenseTracker() {
 
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
-            <Left onStallClick={()=>(navigate('/stall-details'))} onProductClick={()=>(navigate('/product'))}/>
+            <Left onStallClick={()=>(navigate('/stall-details'))} onProductClick={()=>(navigate('/product'))} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}/>
             <Right
                 expenses={expenses}
                 totalAmount={totalAmount}
