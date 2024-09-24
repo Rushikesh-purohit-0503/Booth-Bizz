@@ -8,6 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setStallName as reduxsetStallName } from '../../store/stallnameSlice';
 import AddStallPopup from './addstallpopup/AddStallPopup';
 const Dashboard = () => {
+
+
+
+    
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [stallName, setStallName] = useState('');
     const [stallDetails, setStallDetails] = useState([]);
@@ -19,6 +23,7 @@ const Dashboard = () => {
         { src: stall2, title: "Stall 2" },
         { src: stall3, title: "Stall 3" }]
 
+    
     const handleAddStallClick = () => {
         setIsPopupVisible(true);
     };
@@ -28,7 +33,7 @@ const Dashboard = () => {
         navigate('/stall-details')
     }
     const handleSaveCard = (details) => {
-        const imagePath = Img[0].src; 
+        const imagePath = Img[Math.floor(Math.random() * Img.length)].src 
         console.log(imagePath)
         setStallDetails([...stallDetails, { 
           ...details, 
@@ -50,7 +55,7 @@ const Dashboard = () => {
         <main className="flex flex-col items-center m-auto mt-10 max-w-6xl px-5">
             <div className="grid mt-12 grid-cols-3 gap-5 w-full">
                 <div className="cursor-pointer" onClick={handleAddStallClick}>
-                    <div className="relative border-2 border-dashed border-gray-300 bg-white text-gray-300 text-6xl font-bold flex justify-center items-center h-56 rounded-lg transition-colors duration-300 hover:bg-gray-100 hover:text-gray-500">
+                    <div className="relative border-2 border-dashed border-gray-300 bg-white text-gray-300 text-6xl font-bold flex justify-center items-center h-full rounded-lg transition-colors duration-300 hover:bg-gray-100 hover:text-gray-500">
                         + Add Stall
                     </div>
                 </div>
@@ -61,7 +66,7 @@ const Dashboard = () => {
                     <DashboardImg
                         key={`dynamic-${index}`}
                         src={details.image}
-                        onClick={() => navigate('/stall-details')}
+                        onClick={handleClick}
                         title={details.stallName}
                         stallNumber={details.stallNumber}
                         event={details.eventName}

@@ -27,12 +27,12 @@ function StallDetails() {
   return (
     <div className="flex min-h-screen bg-pink-50 p-6">
       <Left
-        stallName={stall.stallName}
+        stallName={stall.stall.name}
         onClickExpensetaker={onExpenseClick}
         onProductClick={()=>(navigate('/product'))}
         onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}
       />
-     <RightAnalysis src={stall.src} product={product} eventName={eventName} location={location}/>
+     <RightAnalysis src={stall.stall.src} product={product} eventName={eventName} location={location}/>
     </div>
   )
 }

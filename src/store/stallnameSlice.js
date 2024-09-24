@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   stallName: '',
-  src:""
+  src:"",
+  city:'',
+
 };
 
 const stallSlice = createSlice({
@@ -10,8 +12,7 @@ const stallSlice = createSlice({
   initialState,
   reducers: {
     setStallName: (state, action) => {
-      state.stallName = action.payload.name;
-      state.src=action.payload.src;
+      state.stall = { ...state.stall, ...action.payload };
     },
 
     // clearStallName: (state) => {

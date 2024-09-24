@@ -2,6 +2,7 @@ import React from 'react';
 import { PlusIcon, MinusIcon } from 'lucide-react';
 
 function RightPOS({ products, incrementQuantity, decrementQuantity, totalAmount, onConfirmSale,onChange,customerName }) {
+  
   return (
     <div className="flex-1 p-5 bg-white shadow-md rounded-lg ml-4">
       <div className="flex justify-between  items-center mb-5">

@@ -30,7 +30,6 @@ class AuthService {
 
       // Step 3: Save user data to Firestore
       await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
         email: user.email,
         username: userName,
       });

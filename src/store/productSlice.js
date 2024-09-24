@@ -21,7 +21,7 @@ const productSlice = createSlice({
     },
     updateProductQuantity: (state, action) => {
       const { name, quantity } = action.payload;
-      const product = state.find(p => p.name === name);
+      const product = state.find((p) => p.name === name);
       if (product) {
         product.quantity = quantity;
       }
