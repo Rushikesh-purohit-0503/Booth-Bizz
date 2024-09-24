@@ -55,7 +55,7 @@ const SalesAnalysis = () => {
     const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, transactionId: null });
     const totalSales = aggregatedData.reduce((sum, item) => sum + item.sales, 0);
     const totalQuantitySold = aggregatedData.reduce((sum, item) => sum + Number(item.quantity), 0);
-
+    const totalSpent=(localStorage.getItem('totalamount'))
     const displayedData = showMore ? saleData : saleData.slice(0, 10);
 
     const handleRowClick = (transaction) => {
@@ -119,7 +119,7 @@ const SalesAnalysis = () => {
 
     return (
         <div className='flex min-h-screen bg-pink-50 p-6'>
-            <Left stallName={stall.stallName} onClickExpensetaker={() => navigate('/expense-tracker')} onProductClick={() => navigate('/product')} onStallClick={() => navigate('/stall-details')} />
+            <Left stallName={stall.stall.name} onClickExpensetaker={() => navigate('/expense-tracker')} onProductClick={() => navigate('/product')} onStallClick={() => navigate('/stall-details')} />
             <div className='w-3/4 ml-4'>
                 <div className="p-5 bg-white shadow-md rounded-lg">
                     <h1 className="text-2xl text-gray-600 font-bold mb-5">Sales Overview & Product Management</h1>
@@ -131,6 +131,14 @@ const SalesAnalysis = () => {
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Total Product Sales (Quantity)</h2>
                             <p className="text-2xl text-gray-600 font-bold">{totalQuantitySold}</p>
+                        </div>
+                        <div className="bg-white p-4 rounded shadow">
+                            <h2 className="text-lg text-gray-600 font-semibold">Total Amount Spent </h2>
+                            <p className="text-2xl text-gray-600 font-bold">{(totalSpent)}</p>
+                        </div>
+                        <div className="bg-white p-4 rounded shadow">
+                            <h2 className="text-lg text-gray-600 font-semibold">Revenue</h2>
+                            <p className="text-2xl text-gray-600 font-bold">{(-1)*(totalSpent-totalSales)}</p>
                         </div>
                     </div>
 

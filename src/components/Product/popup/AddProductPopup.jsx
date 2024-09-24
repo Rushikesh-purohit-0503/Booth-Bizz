@@ -33,7 +33,7 @@ const AddProductPopup = ({ isOpen, onClose, onSubmit }) => {
           />
           {errors.price && <span className="text-red-500 text-sm mb-2">{errors.price.message}</span>}
 
-          <label htmlFor="quantity" className="mb-1 text-left">Quantity</label>
+          {/* <label htmlFor="quantity" className="mb-1 text-left">Quantity</label>
           <input 
             type="number" 
             id="quantity" 
@@ -43,7 +43,7 @@ const AddProductPopup = ({ isOpen, onClose, onSubmit }) => {
             })}
             className="mb-3 p-2 text-base border border-gray-300 rounded"
           />
-          {errors.quantity && <span className="text-red-500 text-sm mb-2">{errors.quantity.message}</span>}
+          {errors.quantity && <span className="text-red-500 text-sm mb-2">{errors.quantity.message}</span>} */}
 
           <button 
             type="submit" 
