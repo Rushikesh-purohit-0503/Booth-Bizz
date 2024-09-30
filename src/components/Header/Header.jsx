@@ -47,6 +47,8 @@ function Header() {
     }
   };
 
+  
+
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <nav className="px-4 py-3 flex justify-between shadow-sm items-center">
@@ -73,7 +75,7 @@ function Header() {
             </button>
             {dropdownOpen && (
               <div ref={dropdownRef}  className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg">
-                <Link to="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100" onClick={closeDropdown}>Account Details</Link>
+                {/* <Link to="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-100" onClick={closeDropdown}>Account Details</Link> */}
                 <button onClick={handleLogout} className="w-full text-left flex gap-3 py-2 px-4 text-gray-700 hover:bg-gray-100">
                   Logout <img className='items-end' src={logoutImg} alt="Logout" />
                 </button>

@@ -3,6 +3,8 @@ import { ChevronDown } from 'lucide-react';
 import EventCard from './EventCard';
 import HomePageImage from "../../assets/HomePage.png";
 
+
+
 function EventPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState('City');
@@ -11,7 +13,7 @@ function EventPage() {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
-
+  
   const events = [
     { id: 1, title: 'WhiteFlea', location: 'Surat', date: '2024-11-01', description: 'Discover the latest fashion trends and unique accessories at this vibrant showcase.' },
     { id: 2, title: 'Fashion and Accessories Fair', location: 'Ahmedabad', date: '2024-11-05', description: 'Exhibit your latest fashion and accessories collections.' },
@@ -53,12 +55,14 @@ function EventPage() {
         setIsDropdownOpen(false);
       }
     };
-
+ 
+    
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownRef]);
+
 
   return (
     <main className="container mx-auto px-4">
