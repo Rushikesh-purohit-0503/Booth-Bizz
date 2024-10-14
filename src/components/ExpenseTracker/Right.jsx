@@ -6,13 +6,13 @@ function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl  text-gray-600  font-medium">Transactions</h2>
                 <div className="flex items-center space-x-4">
-                    <p className="text-gray-600 font-medium text-xl">Total Spent - ₹ {parseInt(totalAmount,10)} </p>
+                   
                     <button onClick={onAddExpense} className="bg-red-300 px-4 py-2 rounded-md hover:bg-red-400 transition duration-300">
                         Add Expense
                     </button>
                 </div>
             </div>
-            <table className="w-full">
+            <table className="w-full border-b">
                 <thead>
                     <tr className="text-left text-gray-600 border-b">
                         <th className="pb-2">Date</th>
@@ -41,7 +41,7 @@ function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}
                     ))}
                 </tbody>
             </table>
-
+            <p className="text-gray-600 my-4 font-medium text-xl">Total Spent - ₹ {parseInt(totalAmount,10)} </p>
         </div>
   )
 }

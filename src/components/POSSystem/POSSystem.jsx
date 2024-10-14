@@ -68,6 +68,9 @@ function POSSystem() {
     // Resetting the reduxProduct quantity to 0
     reduxProducts.forEach(product => {
       dispatch(updateProductQuantity({ name: product.name, quantity: 0 }));
+
+     setCustomerName("")
+
     });
     setCustomerName("")
     setIsModalOpen(false)

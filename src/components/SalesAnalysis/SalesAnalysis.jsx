@@ -139,13 +139,15 @@ const SalesAnalysis = () => {
                             <h2 className="text-lg text-gray-600 font-semibold">Total Product Sales (Quantity)</h2>
                             <p className="text-2xl text-gray-600 font-bold">₹{totalQuantitySold}</p>
                         </div>
+                   
+                       
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Total Amount Spent </h2>
-                            <p className="text-2xl text-gray-600 font-bold">₹{(totalSpent)}</p>
+                            <p className="text-2xl text-gray-600 font-bold">{(totalSpent)}</p>
                         </div>
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Revenue</h2>
-                            <p className="text-2xl text-gray-600 font-bold">₹{(-1)*(totalSpent-totalSales)}</p>
+                            <p className="text-2xl text-gray-600 font-bold">{(-1)*(totalSpent-totalSales)}</p>
                         </div>
                     </div>
 

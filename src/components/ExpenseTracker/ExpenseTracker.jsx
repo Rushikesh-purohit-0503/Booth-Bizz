@@ -22,6 +22,7 @@ function ExpenseTracker() {
     const [editingExpense, setEditingExpense] = useState(null);
     const [expenseToDelete, setExpenseToDelete] = useState(null);
     const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount),0);
+
     
     const stall = useSelector((state)=>state.stall.clickedStall)
 
@@ -41,6 +42,8 @@ function ExpenseTracker() {
         setExpenses(JSON.parse(storedExpenses));
     }
 }, [authStatus, navigate, totalAmount]);
+
+    localStorage.setItem('totalamount',totalAmount)
 
 
 
@@ -97,7 +100,6 @@ function ExpenseTracker() {
                     onSubmit={handleAddExpense}
                 />
             )}
-
             {isEditPopupOpen && (
                 <EditExpensePopup
                     isOpen={isEditPopupOpen}

@@ -61,9 +61,9 @@ function RightProduct({ products, onAddProduct, totalAmount,onEditProduct, onDel
           </tbody>
         </table>
       </div>
-      <div className="mt-5">
+      {/* <div className="mt-5">
         <h2 className="text-xl text-gray-600 font-semibold">Total Amount(per unit): &#8377; {totalAmount}</h2>
-      </div>
+      </div> */}
     </div>
   );
 }
