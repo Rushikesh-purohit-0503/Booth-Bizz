@@ -42,7 +42,9 @@ function Header() {
           <li><Link to="/" className="text-xl text-gray-600 hover:text-gray-950">Home</Link></li>
           <li><Link to="/events" className="text-xl text-gray-600 hover:text-gray-950">Events</Link></li>
           {authStatus ? (
+            <>
             <li><Link to="/dashboard" className="text-xl text-gray-600 hover:text-gray-950">Dashboard</Link></li>
+            <li><Link to="/contact-us" className="text-xl text-gray-600 hover:text-gray-950" >Contact Us</Link></li></>
           ) : (
             <>
               
