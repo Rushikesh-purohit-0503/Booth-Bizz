@@ -4,9 +4,9 @@ import { FaXTwitter } from "react-icons/fa6";
 import { GrLocation, GrMailOption, GrPhone } from "react-icons/gr";
 import { Link } from "react-router-dom";
 
-function ContactUs() {
+function ContactUs({id}) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 py-16 px-4 sm:px-6 lg:px-8">
+    <div  className="min-h-screen  py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-16">
           Contact Us
@@ -47,7 +47,7 @@ function ContactUs() {
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400 h-32 resize-none"
               />
               <Link to="/" className="block">
-                <button className="w-full py-3 px-4 bg-gradient-to-r from-pink-500 to-red-500 text-white font-semibold rounded-md hover:from-pink-600 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+                <button className="w-full py-3 px-4 bg-red-300 text-gray-700 font-semibold rounded-md hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
                   Send Message
                 </button>
               </Link>

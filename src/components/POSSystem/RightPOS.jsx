@@ -5,10 +5,10 @@ function RightPOS({ products, incrementQuantity, decrementQuantity, totalAmount,
   
   return (
     <div className="flex-1 p-5 bg-white shadow-md rounded-lg ml-4">
-      <div className="flex justify-between  items-center mb-5">
-        <h1 className="text-2xl text-gray-600 font-semibold">POS System</h1>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Customer Name:</label>
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="text-2xl text-gray-600 font-bold">POS System</h1>
+        <div className="flex-1 flex justify-center mb-4">
+          <label className="block text-gray-700 font-medium mt-2 mr-2">Customer Name:</label>
           <input
             type="text"
             value={customerName}
@@ -18,12 +18,7 @@ function RightPOS({ products, incrementQuantity, decrementQuantity, totalAmount,
           />
          
         </div>
-        <button
-          className="bg-red-300 text-black py-2 px-4 rounded hover:bg-red-400 transition duration-300"
-          onClick={onConfirmSale}
-        >
-          Check Out
-        </button>
+        
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-500">
@@ -59,9 +54,17 @@ function RightPOS({ products, incrementQuantity, decrementQuantity, totalAmount,
           </tbody>
         </table>
       </div>
-      <div className="mt-5">
+      <div className="mt-5 flex justify-between items-center">
         <h2 className="text-xl text-gray-600 font-semibold">Total Amount: &#8377; {totalAmount}</h2>
+
+        <button
+          className="bg-red-300 text-black py-3 px-7 rounded hover:bg-red-400 transition duration-300"
+          onClick={onConfirmSale}
+        >
+          Check Out
+        </button>
       </div>
+      
     </div>
   );
 }

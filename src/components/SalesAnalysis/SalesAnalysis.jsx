@@ -9,7 +9,7 @@ const SalesAnalysis = () => {
     const [saleData, setSalesData] = useState([]);
     const navigate = useNavigate();
     const authStatus = useSelector((state) => state.auth.status)
-    const stall = useSelector((state) => state.stall)
+    const stall = useSelector((state) => state.stall.clickedStall)
     useEffect(() => {
         if (!authStatus) {
             navigate('/signin')
@@ -34,7 +34,9 @@ const SalesAnalysis = () => {
             navigate('/pos'); // Navigate back to POS system or handle as needed
         }
     }, [navigate]);
+    useEffect(()=>{
 
+    },[])
     const aggregateData = (data) => {
         const aggregated = data.reduce((acc, item) => {
             const existingProduct = acc.find(p => p.name === item.name);
@@ -48,6 +50,11 @@ const SalesAnalysis = () => {
         }, []);
         return aggregated;
     };
+    
+    
+    // useEffect(()=>{},[]) Handle Total Spent Coming form POS
+
+
 
     const [showMore, setShowMore] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -55,7 +62,7 @@ const SalesAnalysis = () => {
     const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, transactionId: null });
     const totalSales = aggregatedData.reduce((sum, item) => sum + item.sales, 0);
     const totalQuantitySold = aggregatedData.reduce((sum, item) => sum + Number(item.quantity), 0);
-
+    const totalSpent=(localStorage.getItem('totalamount'))
     const displayedData = showMore ? saleData : saleData.slice(0, 10);
 
     const handleRowClick = (transaction) => {
@@ -130,7 +137,15 @@ const SalesAnalysis = () => {
                         </div>
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Total Product Sales (Quantity)</h2>
-                            <p className="text-2xl text-gray-600 font-bold">{totalQuantitySold}</p>
+                            <p className="text-2xl text-gray-600 font-bold">₹{totalQuantitySold}</p>
+                        </div>
+                        <div className="bg-white p-4 rounded shadow">
+                            <h2 className="text-lg text-gray-600 font-semibold">Total Amount Spent </h2>
+                            <p className="text-2xl text-gray-600 font-bold">₹{(totalSpent)}</p>
+                        </div>
+                        <div className="bg-white p-4 rounded shadow">
+                            <h2 className="text-lg text-gray-600 font-semibold">Revenue</h2>
+                            <p className="text-2xl text-gray-600 font-bold">₹{(-1)*(totalSpent-totalSales)}</p>
                         </div>
                     </div>
 

@@ -22,7 +22,8 @@ function Product() {
     const [productToDelete, setProductToDelete] = useState(null);
     const navigate = useNavigate()
     const authStatus = useSelector((state) => (state.auth.status))
-    const stall = useSelector((state)=>state.stall)
+    const stall = useSelector((state)=>state.stall.clickedStall)
+
     useEffect(() => {
         if (!authStatus) {
             navigate('/signin')
@@ -97,7 +98,7 @@ function Product() {
     };
 
     const totalAmount = products.reduce((total, product) => (total + Number(product.price)), 0);
-
+    
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
             <Left stallName={stall.stallName} onStallClick={() => navigate('/stall-details')} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))} onProductClick={() => navigate('/product')} onClickExpensetaker={() => (navigate('/expense-tracker'))} />

@@ -5,99 +5,122 @@ import stall3 from '../../assets/stall-3.jpeg';
 import DashboardImg from './DashboardImage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStallName as reduxsetStallName } from '../../store/stallnameSlice';
+import { addStall, setStallName as reduxsetStallName } from '../../store/stallSlice';
+import { clickedStall, deleteStall } from '../../store/stallSlice';
 import AddStallPopup from './addstallpopup/AddStallPopup';
+
 const Dashboard = () => {
 
 
-
-    
     const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const [stallName, setStallName] = useState('');
-    const [stallDetails, setStallDetails] = useState([]);
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-    const authStatus = useSelector((state) => (state.auth.status))
+    const [stallDetails, setStallDetails] = useState(() => {
+        // Load initial stall data from localStorage
+        const savedStalls = localStorage.getItem('stallDetails');
+        return savedStalls ? JSON.parse(savedStalls) : [];
+    });
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const authStatus = useSelector((state) => state.auth.status);
+
     const Img = [
         { src: stall1, title: "Stall 1" },
         { src: stall2, title: "Stall 2" },
-        { src: stall3, title: "Stall 3" }]
+        { src: stall3, title: "Stall 3" },
+    ];
 
-    
     const handleAddStallClick = () => {
         setIsPopupVisible(true);
     };
-    const handleClick = (stall) => {
-        dispatch(reduxsetStallName(stall))
-        localStorage.setItem('stall', JSON.stringify(stall));
-        navigate('/stall-details')
-    }
+    const handleDeleteStall = (stallName) => {
+        // Dispatch the action to delete the stall from Redux state
+        dispatch(deleteStall(stallName));
+
+        // Remove the stall from the local stallDetails array
+        const updatedStalls = stallDetails.filter(stall => stall.stallName !== stallName);
+        setStallDetails(updatedStalls);
+
+        // Remove from local storage
+        localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
+    };
     const handleSaveCard = (details) => {
-        const imagePath = Img[Math.floor(Math.random() * Img.length)].src 
-        console.log(imagePath)
-        setStallDetails([...stallDetails, { 
-          ...details, 
-          image: imagePath 
-        }]); 
+        const imagePath = Img[Math.floor(Math.random() * Img.length)].src;
+
+        const newStall = {
+            ...details,
+            image: imagePath,
+        };
+        dispatch(addStall(newStall))
+        const updatedStalls = [...stallDetails, newStall];
+        setStallDetails(updatedStalls);
+
+        // Save the updated stalls to localStorage
+        localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
+
         setIsPopupVisible(false);
-      };
-    
+    };
+
+    const handleClick = (stall) => {
+        dispatch(clickedStall(stall));
+
+        // localStorage.removeItem('stallDetails');
+        navigate('/stall-details');
+    };
+
     const handleCancelPopup = () => {
         setIsPopupVisible(false);
-        setStallName('');
     };
+
+    const handleOverallAnalysisClick = () => {
+        navigate('/overall-stalls-analysis')
+    }
     useEffect(() => {
         if (!authStatus) {
             navigate('/signin');
         }
     }, [authStatus, navigate]);
+    // useEffect(() => {
+    //     const storedStalls = JSON.parse(localStorage.getItem('stallDetails')) || [];
+    //     setStallDetails(storedStalls);
+    // }, []);
+
     return (
+        <>
+        <div className="fixed top-28 right-14 z-10">
+                <button
+                    className="py-2 px-4 rounded bg-red-300 text-black font-semibold hover:bg-red-400 transition duration-300 "
+                    onClick={handleOverallAnalysisClick}
+                >
+                    Overall Stalls Analysis
+                </button>
+            </div>
         <main className="flex flex-col items-center m-auto mt-10 max-w-6xl px-5">
+            
             <div className="grid mt-12 grid-cols-3 gap-5 w-full">
                 <div className="cursor-pointer" onClick={handleAddStallClick}>
                     <div className="relative border-2 border-dashed border-gray-300 bg-white text-gray-300 text-6xl font-bold flex justify-center items-center h-full rounded-lg transition-colors duration-300 hover:bg-gray-100 hover:text-gray-500">
                         + Add Stall
                     </div>
                 </div>
-                {
-                    Img.map((ImageObj, index) => (<DashboardImg key={index} src={ImageObj.src} title={ImageObj.title} onClick={() => (handleClick({ name: ImageObj.title, src: ImageObj.src }))} />))
-                }
+
                 {stallDetails.map((details, index) => (
                     <DashboardImg
                         key={`dynamic-${index}`}
                         src={details.image}
-                        onClick={handleClick}
+                        onClick={() => handleClick(details)}
                         title={details.stallName}
                         stallNumber={details.stallNumber}
                         event={details.eventName}
+                        onDelete={() => handleDeleteStall(details.stallName)}
                     />
                 ))}
-                {/* <DashboardImg src={stall1} onClick={()=>(navigate('/analysis-page'))} title={"Stall1"}/>
-                <DashboardImg src={stall2} onClick={()=>(navigate('/analysis-page'))} title={"Stall2"}/>
-                <DashboardImg src={stall3} onClick={()=>(navigate('/analysis-page'))} title={"Stall3"}/>
-                <DashboardImg src={stall3} onClick={()=>(navigate('/analysis-page'))} title={"Stall4"}/> */}
             </div>
 
             {isPopupVisible && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-5 rounded-lg w-full max-w-md">
-                        <h2 className="text-lg">Add New Stall</h2>
-                        <input
-                            type="text"
-                            value={stallName}
-                            onChange={(e) => setStallName(e.target.value)}
-                            placeholder="Enter stall name"
-                            className="mt-2 p-2 w-full border border-gray-300 rounded"
-                        />
-                        <div className='flex gap-6'>
-                            <button onClick={handleSaveCard} className="mt-4 w-full py-2 rounded bg-red-300 text-white hover:bg-red-400">Save</button>
-                            <button onClick={handleCancelPopup} className="mt-4 w-full py-2 rounded bg-gray-300 text-black hover:bg-gray-400">Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                <AddStallPopup onSave={handleSaveCard} onCancel={handleCancelPopup} />
             )}
-             {isPopupVisible && <AddStallPopup onSave={handleSaveCard} onCancel={handleCancelPopup} />}
         </main>
+        </>
     );
 };
 

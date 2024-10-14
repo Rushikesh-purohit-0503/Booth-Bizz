@@ -4,35 +4,44 @@ import Left from '../../ExpenseTracker/Left'
 import { useNavigate } from 'react-router-dom'
 import stall1 from '../../../assets/stall-1.jpeg'; // Replace with the relevant stall image
 import RightAnalysis from './RightStallDetails';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setStallName } from '../../../store/stallSlice';
 
 
 function StallDetails() {
   const navigate = useNavigate()
-  const onExpenseClick = () => ((navigate('/expense-tracker')))
- 
-  const authStatus=useSelector((state)=>(state.auth.status))
- const stall=useSelector((state)=>(state.stall))
+  const authStatus = useSelector((state) => (state.auth.status))
+  const stall = useSelector((state) => (state.stall.clickedStall))
+  
 
+  useEffect(() => {
+    if (!authStatus) navigate('/signin')
 
-  useEffect(()=>{
-    if(!authStatus) navigate('/signin')
-    
-  },[authStatus,navigate])
-   
+  }, [authStatus, navigate])
+  // useEffect(() => {
+  //   // Load stall details from local storage
+  //   const savedStall = localStorage.getItem('stallDetails'); // Ensure 'stalls' is the correct key
+  //   if (savedStall) {
+  //     const stallData = JSON.parse(savedStall);
+  //     if (Array.isArray(stallData) && stallData.length > 0) {
+  //       dispatch(setStallName(stallData)); // Update Redux state with saved data
+  //     }
+  //   }
+  // }, [dispatch]);
   const eventName = "WhiteFlea";
   const product = "Food";
   const location = "Surat";
- 
+
+  const onExpenseClick = () => ((navigate('/expense-tracker')))
   return (
     <div className="flex min-h-screen bg-pink-50 p-6">
       <Left
-        stallName={stall.stall.name}
+        stallName={stall.stallName}
         onClickExpensetaker={onExpenseClick}
-        onProductClick={()=>(navigate('/product'))}
-        onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}
+        onProductClick={() => (navigate('/product'))}
+        onClickSalesAnalysis={() => (navigate('/sales-analysis'))}
       />
-     <RightAnalysis src={stall.stall.src} product={product} eventName={eventName} location={location}/>
+      <RightAnalysis src={stall.image} product={stall.productCategory} eventName={stall.eventName} location={stall.city} />
     </div>
   )
 }

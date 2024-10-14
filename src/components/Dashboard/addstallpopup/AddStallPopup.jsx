@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
 
-const availableImages = [
-  'stall-1.jpeg',
-  'stall-2.jpeg',
-  'stall-3.jpeg',
-  'stall-4.jpeg',
-];
-
 const AddStallPopup = ({ onSave, onCancel }) => {
   const [stallName, setStallName] = useState('');
   const [stallNumber, setStallNumber] = useState('');
@@ -15,9 +8,19 @@ const AddStallPopup = ({ onSave, onCancel }) => {
   const [productCategory, setProductCategory] = useState('');
 
   const handleSave = () => {
-    // Randomly select an image from availableImages
-    const randomImage = availableImages[Math.floor(Math.random() * availableImages.length)];
-    onSave({ stallName, stallNumber, city, eventName, productCategory, image: randomImage });
+    // Create a stall object with the details
+    const stallDetails = {
+      stallName,
+      stallNumber,
+      city,
+      eventName,
+      productCategory,
+    };
+
+    // Call the onSave function with the stall details
+    onSave(stallDetails);
+
+    // Clear the form fields after saving
     setStallName('');
     setStallNumber('');
     setCity('');
@@ -71,7 +74,7 @@ const AddStallPopup = ({ onSave, onCancel }) => {
             type="text"
             value={productCategory}
             onChange={(e) => setProductCategory(e.target.value)}
-            placeholder="Eg. food, jewellery, accessories, crafts and etc."
+            placeholder="Eg. food, jewellery, accessories, crafts, etc."
             className="mt-1 p-2 w-full border border-gray-300 rounded"
           />
         </div>

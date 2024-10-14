@@ -29,10 +29,10 @@ function RightProduct({ products, onAddProduct, totalAmount,onEditProduct, onDel
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-sm text-gray-600 uppercase bg-gray-50">
-            <tr>
+            <tr className='border-b'>
               <th className="py-3 px-6">Name</th>
               <th className="py-3 px-6">Price</th>
-              <th className="py-3 px-6">Quantity</th>
+              {/* <th className="py-3 px-6">Quantity</th> */}
               <th className="py-3 px-6">Actions</th>
             </tr>
           </thead>
@@ -41,7 +41,7 @@ function RightProduct({ products, onAddProduct, totalAmount,onEditProduct, onDel
               <tr key={index} className="bg-white text-lg border-b">
                 <td className="py-4 px-6">{product.name}</td>
                 <td className="py-4 px-6">₹{product.price}</td>
-                <td className="py-4 px-6">{product.quantity}</td>
+                {/* <td className="py-4 px-6">{product.quantity}</td> */}
                 <td className="py-4 px-6">
                   <button
                     onClick={() => onEditProduct(product)}

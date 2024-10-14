@@ -22,19 +22,26 @@ function ExpenseTracker() {
     const [editingExpense, setEditingExpense] = useState(null);
     const [expenseToDelete, setExpenseToDelete] = useState(null);
     const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount),0);
-    const stall = useSelector((state)=>state.stall)
+    
+    const stall = useSelector((state)=>state.stall.clickedStall)
 
-    useEffect(()=>{
-        if(!authStatus){
-            navigate('/signin')
-        }
-    },[authStatus,navigate])
-    useEffect(() => {
-        const storedExpenses = localStorage.getItem('expenses');
-        if (storedExpenses) {
-            setExpenses(JSON.parse(storedExpenses));
-        }
-    }, []);
+
+  useEffect(() => {
+    // Set total amount in local storage whenever it changes
+    localStorage.setItem('totalamount', totalAmount);
+
+    // Check authentication status and navigate if not authenticated
+    if (!authStatus) {
+        navigate('/signin');
+    }
+
+    // Load stored expenses from local storage
+    const storedExpenses = localStorage.getItem('expenses');
+    if (storedExpenses) {
+        setExpenses(JSON.parse(storedExpenses));
+    }
+}, [authStatus, navigate, totalAmount]);
+
 
 
 
