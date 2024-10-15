@@ -17,9 +17,20 @@ function Header() {
   const closeDropdown = () => setDropdownOpen(false);
 
   const scrollToSection = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname === '/') {
+      const section = document.getElementById(sectionId);
+      section?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Navigate to the home page and pass sectionId in state
+      navigate('/', { state: { sectionId } });
+    }
+  };
+
+  const scrollToTop = () => {
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/', { state: { sectionId: 'top' } }); // Navigate home, then scroll to top
     }
   };
 
@@ -36,15 +47,41 @@ function Header() {
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <nav className="px-4 py-3 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-black">BoothBiz</Link>
+        <button onClick={scrollToTop} className="text-2xl font-bold text-black">
+          BoothBiz
+        </button>
 
         <ul className="flex space-x-10">
-          <li><Link to="/" className="text-xl text-gray-600 hover:text-gray-950">Home</Link></li>
+        <li>
+            <button 
+              onClick={scrollToTop}
+              className="text-xl text-gray-600 hover:text-gray-950"
+            >
+              Home
+            </button>
+          </li>
           <li><Link to="/events" className="text-xl text-gray-600 hover:text-gray-950">Events</Link></li>
           {authStatus ? (
             <>
             <li><Link to="/dashboard" className="text-xl text-gray-600 hover:text-gray-950">Dashboard</Link></li>
-            <li><Link to="/contact-us" className="text-xl text-gray-600 hover:text-gray-950" >Contact Us</Link></li></>
+            
+            <li>
+                <button 
+                  onClick={() => scrollToSection('#service')}
+                  className="text-xl text-gray-600 hover:text-gray-950"
+                >
+                  Services
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('#contact')}
+                  className="text-xl text-gray-600 hover:text-gray-950"
+                >
+                  Contact Us
+                </button>
+              </li>
+              </>
           ) : (
             <>
               

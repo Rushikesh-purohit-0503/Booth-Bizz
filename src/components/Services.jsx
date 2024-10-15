@@ -42,7 +42,7 @@ function Service() {
              entries as needed. Customize your categories for more personalized tracking. 
               All of this, and more, is simple and efficient with our Expense Tracker          </p>
           <Link
-            to="/events"
+            to="/signin"
             className="inline-block bg-red-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-red-400 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
           >
             Explore Feature
@@ -68,7 +68,7 @@ function Service() {
             with our platform.            
           </p>
           <Link
-            to="/events"
+            to="/signin"
             className="inline-block bg-red-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-red-400 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
           >
             Explore Feature
@@ -109,7 +109,7 @@ function Service() {
             Perfect for retailers and vendors. Enhance efficiency and customer experience with our user-friendly POS solution.
           </p>
           <Link
-            to="/events"
+            to="/signin"
             className="inline-block bg-red-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-red-400 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
           >
             Explore Feature
