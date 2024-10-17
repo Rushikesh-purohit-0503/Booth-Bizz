@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef,useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { UserIcon } from 'lucide-react';
 import logoutImg from '../../assets/logout-icon.svg';
@@ -12,9 +12,12 @@ function Header() {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const dropdownRef = useRef(null)
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const closeDropdown = () => setDropdownOpen(false);
+
+
+
 
   const scrollToSection = (sectionId) => {
     if (location.pathname === '/') {
@@ -32,7 +35,7 @@ function Header() {
     } else {
       navigate('/', { state: { sectionId: 'top' } }); // Navigate home, then scroll to top
     }
-  };
+  }
 
   const handleLogout = async () => {
     try {
@@ -43,7 +46,18 @@ function Header() {
       console.error("Error during logout", error);
     }
   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        closeDropdown(); // Close dropdown if click is outside
+      }
+    };
 
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <nav className="px-4 py-3 flex justify-between items-center">
@@ -106,8 +120,8 @@ function Header() {
         </ul>
 
         {authStatus ? (
-          <div className="relative">
-            <button onClick={toggleDropdown} className="flex items-center px-4 py-2">
+          <div className="relative" ref={dropdownRef}>
+            <button  onClick={toggleDropdown} className="flex items-center px-4 py-2">
               <div className="flex items-center gap-5 border-2 border-red-300 rounded-lg px-4 py-2">
                 <UserIcon className='text-red-300' size={20} />
                 {userData?.userName || "User"}
@@ -121,7 +135,7 @@ function Header() {
                 >
                   Logout 
                 </button>
-                  <div className='w-full text-left py-2 px-4  '><img src={logoutImg} alt="Logout" /></div>
+                  <div className='w-full text-left py-2 px-4'><img src={logoutImg} alt="Logout" /></div>
               </div>
             )}
           </div>

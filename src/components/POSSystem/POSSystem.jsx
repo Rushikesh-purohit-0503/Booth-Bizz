@@ -1,57 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Left from '../ExpenseTracker/Left';
 import RightPOS from './RightPOS';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteProduct, updateProductQuantity } from '../../store/productSlice';
+import { setProducts, updateProductQuantity } from '../../store/productSlice';
 import Modal from 'react-modal';
-
+import StallManagement from '../../firebase/Backend/stallManagement'; // Import StallManagement
+import '../../styles/Pospopup.css'
 function POSSystem() {
+  const navigate = useNavigate();
+  const authStatus = useSelector((state) => (state.auth.status));
+  const stall = useSelector((state) => (state.stall.clickedStall));
+  const reduxProducts = useSelector((state) => state.product);
+  const [customerName, setCustomerName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.userData)
+  const stallManagement =useMemo(()=>new StallManagement({ uid: user.uid }),[user.uid])  // Ensure to pass the user
 
-  const navigate = useNavigate()
-  const authStatus = useSelector((state) => (state.auth.status))
-  const stall = useSelector((state) => (state.stall.clickedStall))
-
-  const reduxProducts = useSelector((state) => state.product)
-  const [customerName, setCustomerName] = useState("")
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-
-
-  const dispatch = useDispatch()
   useEffect(() => {
     if (!authStatus) {
-      navigate('/signin')
+      navigate('/signin');
     }
-  }, [authStatus, navigate])
+  }, [authStatus, navigate]);
 
+  // Fetch products when the component mounts
   useEffect(() => {
-    reduxProducts.forEach(product => {
-      dispatch(updateProductQuantity({ name: product.name, quantity: 0 }));
-    });
-  }, [dispatch]);
-
+    const fetchProducts = async () => {
+      try {
+        const fetchedProducts = await stallManagement.getProducts(stall.id);
+        // Dispatch the products to Redux
+        dispatch(setProducts(fetchedProducts)); // Set products in the Redux store
+        // Initialize quantities
+        fetchedProducts.forEach(product => {
+          dispatch(updateProductQuantity({ name: product.name, quantity: 0 })); // Initialize quantities
+        });
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    fetchProducts();
+  }, [dispatch, stallManagement, stall.id]);
 
   const handleConfirmSale = () => {
-
     const hasIncrementedProduct = reduxProducts.some(product => product.quantity > 0);
-
     if (!customerName || !hasIncrementedProduct) {
-      alert("Please enter a customer name and increment the quantity of at least one product before checking out.");
+      alert("Please enter a customer name or increment the quantity of at least one product before checking out.");
       return;
     }
     setIsModalOpen(true);
   };
 
-  const confirmSale = () => {
+  const confirmSale = async () => {
+    
 
-    const transactionId = `TXN-${Date.now()}-${Math.floor(Math.random() * 1000)}`; // Create a unique transaction ID based on the current timestamp
-
-
-    // Save the Sale Data For Sale-Analysis
+    // Prepare sale data
     const saleData = {
-      transactionId, // Assign the unique transactionId to the entire sale
       customerName,
+      totalAmount,
       products: reduxProducts.map(product => ({
         name: product.name,
         price: product.price,
@@ -60,41 +66,41 @@ function POSSystem() {
       }))
     };
 
-    // Save the saleData to allSalesData in localStorage
-    let allSalesData = JSON.parse(localStorage.getItem('allSalesData')) || [];
-    allSalesData.push(saleData);
-    localStorage.setItem('allSalesData', JSON.stringify(allSalesData));
+    // Save the saleData to the backend
+    try {
+      await stallManagement.addPOS(stall.id, saleData); // Save the sale data
+    } catch (error) {
+      console.error("Error saving sale data:", error);
+      return;
+    }
 
     // Resetting the reduxProduct quantity to 0
     reduxProducts.forEach(product => {
       dispatch(updateProductQuantity({ name: product.name, quantity: 0 }));
-
-     setCustomerName("")
-
     });
-    setCustomerName("")
-    setIsModalOpen(false)
+    setCustomerName("");
+    setIsModalOpen(false);
   };
-
 
   // Effect to store customer name in local storage
   useEffect(() => {
     localStorage.setItem('customerName', customerName);
   }, [customerName]);
 
-
-
   const handleOnchange = (e) => {
-    setCustomerName(e.target.value)
-  }
+    setCustomerName(e.target.value);
+  };
 
   const incrementQuantity = (product) => {
-    dispatch(updateProductQuantity({ name: product.name, quantity: Number(product.quantity) + 1 }));
+    const updatedQuantity = product.quantity + 1;
+    
+    dispatch(updateProductQuantity({ name: product.name, quantity: updatedQuantity }));
   };
 
   const decrementQuantity = (product) => {
     if (product.quantity > 0) {
-      dispatch(updateProductQuantity({ name: product.name, quantity: product.quantity - 1 }));
+      const updatedQuantity = product.quantity - 1;
+      dispatch(updateProductQuantity({ name: product.name, quantity: updatedQuantity }));
     }
   };
 
@@ -110,9 +116,7 @@ function POSSystem() {
         onProductClick={() => (navigate('/product'))}
       />
 
-
       <RightPOS
-
         products={reduxProducts}
         incrementQuantity={incrementQuantity}
         decrementQuantity={decrementQuantity}
@@ -123,14 +127,13 @@ function POSSystem() {
       />
 
       <Modal
-
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         contentLabel='Confirm Sale'
         className="modal"
         overlayClassName="overlay"
-        appElement={document.getElementById('root')}>
-
+        appElement={document.getElementById('root')}
+      >
         <h2 className="text-xl font-bold mb-4">Confirm Sale</h2>
         <div className="mb-4">
           <h3 className="font-semibold">Customer Name: {customerName}</h3>
@@ -157,37 +160,8 @@ function POSSystem() {
             Confirm
           </button>
         </div>
-
       </Modal>
-      <style jsx>{`
-  .modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 90%;
-    z-index: 1000;
-  }
 
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    justify-content: center;
-    z-index: 999;
-  }
-`}</style>
 
     </div>
   );

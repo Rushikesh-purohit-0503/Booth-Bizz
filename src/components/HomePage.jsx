@@ -57,7 +57,7 @@ function HomePage() {
   }, [location.state]);
   
   
-  const heroContent = (
+  const heroContent = ( 
     <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12 mb-28">
       <div className="max-w-xl">
         <h1 className="text-5xl font-bold mb-4">
@@ -71,7 +71,7 @@ function HomePage() {
           BoothBiz streamlines your business with intuitive management tools and smart sales solutions for any event or market.
         </p>
         <Link
-          to="/events"
+          to={authStatus ? '/events':'/signin'}
           className="inline-block bg-red-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-red-400 transition-transform transform hover:-translate-y-1 hover:scale-105"
         >
           Explore

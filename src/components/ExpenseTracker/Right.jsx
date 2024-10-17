@@ -1,18 +1,30 @@
 import React from 'react'
 import { PencilIcon, TrashIcon } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+
+
 function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}) {
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+    const data = expenses.map((expense, index) => ({
+        name: expense.category,
+        value: expense.amount,
+        color: COLORS[index % COLORS.length]
+      }));
+
+
   return (
     <div className="w-3/4 p-4 bg-white rounded-lg shadow-md ml-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl  text-gray-600  font-medium">Transactions</h2>
+                <h2 className="text-xl  text-gray-600  font-bold">Transactions</h2>
                 <div className="flex items-center space-x-4">
-                   
+                    <p className="text-gray-600 font-medium text-xl">Total Spent - ₹ {parseInt(totalAmount,10)} </p>
                     <button onClick={onAddExpense} className="bg-red-300 px-4 py-2 rounded-md hover:bg-red-400 transition duration-300">
                         Add Expense
                     </button>
                 </div>
             </div>
-            <table className="w-full border-b">
+            <table className="w-full">
                 <thead>
                     <tr className="text-left text-gray-600 border-b">
                         <th className="pb-2">Date</th>
@@ -41,7 +53,28 @@ function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}
                     ))}
                 </tbody>
             </table>
-            <p className="text-gray-600 my-4 font-medium text-xl">Total Spent - ₹ {parseInt(totalAmount,10)} </p>
+
+            <div className="mt-12">
+                <h2 className="text-xl text-gray-600 font-bold mb-4">Expense Distribution</h2>
+                <PieChart width={400} height={400}>
+                    <Pie
+                        data={data}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={150}
+                        fill="#8884d8"
+                        dataKey="value"
+                    >
+                        {data.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                </PieChart>
+            </div>
+
         </div>
   )
 }

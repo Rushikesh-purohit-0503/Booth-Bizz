@@ -1,69 +1,149 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import { XIcon,Trash } from 'lucide-react'; // Importing the cross icon
+import { XIcon, Trash } from 'lucide-react'; // Importing the cross icon
 import Left from '../ExpenseTracker/Left';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
+import StallManagement from '../../firebase/Backend/stallManagement';
 const SalesAnalysis = () => {
     const [saleData, setSalesData] = useState([]);
     const navigate = useNavigate();
     const authStatus = useSelector((state) => state.auth.status)
     const stall = useSelector((state) => state.stall.clickedStall)
+    const user = useSelector((state) => state.auth.userData)
+    const [totalSpent, setTotalSpent] = useState(0)
+    const [graphData, setGraphData] = useState([])
     useEffect(() => {
         if (!authStatus) {
             navigate('/signin')
         }
     }, [authStatus, navigate]);
+    const stallManagement = useMemo(() => new StallManagement({ uid: user.uid }), [user.uid]);
+
+
+
+    // Fetch POS data from Firestore on component load
     useEffect(() => {
-        const allSalesDataFromStorage = localStorage.getItem('allSalesData');
-        if (allSalesDataFromStorage) {
-            const parsedData = JSON.parse(allSalesDataFromStorage);
+        const fetchSalesData = async () => {
+            try {
+                const salesData = await stallManagement.getPOS(stall.id); // Fetch POS data using stall ID
+                console.log("sale data", salesData);
 
-            // Flatten and map the data to add customer name and transaction IDs
-            const processedData = parsedData.flatMap((sale, saleIndex) =>
-                sale.products.map((product, productIndex) => ({
-                    ...product,
-                    customerName: sale.customerName,
-                    transactionId: `${saleIndex + 1}-${productIndex + 1}`, // Sequential ID for each transaction
-                }))
-            );
+                const processedData = salesData.flatMap((sale) =>
+                    sale.products.map((product) => ({
+                        ...product,
+                        customerName: sale.customerName,
+                        transactionId: sale.transactionId, // Use UUID-based ID
+                        totalAmount: sale.totalAmount,
+                        date: new Date(sale.date).toLocaleDateString(),
+                    }))
+                );
+                // console.log("processed data",processedData);
 
-            setSalesData(processedData);
-        } else {
-            navigate('/pos'); // Navigate back to POS system or handle as needed
-        }
-    }, [navigate]);
-    useEffect(()=>{
+                const expense = await stallManagement.getExpenses(stall.id);
+                const totalSpentAmount = expense.reduce((sum, expense) => Number(sum) + Number(expense.amount), 0);
+                setTotalSpent(totalSpentAmount);
 
-    },[])
+                // Call the aggregation function here
+                const aggregatedData = aggregateData(processedData);
+                setSalesData(aggregatedData);
+                console.log(aggregatedData);
+                const graphData = getGraphData(aggregatedData);
+                setGraphData(graphData); // A
+            } catch (error) {
+                console.error("Error fetching sales data:", error);
+                // Handle error by redirecting to POS system
+            }
+        };
+
+        fetchSalesData();
+    }, [navigate, stall.id]);
+
+
+    const getGraphData = (aggregatedData) => {
+        const productSales = {};
+
+        aggregatedData.forEach(transaction => {
+            transaction.products.forEach(product => {
+                if (!productSales[product.name]) {
+                    productSales[product.name] = {
+                        name: product.name,
+                        sales: 0,
+                        price: product.price // Store product price if needed
+                    };
+                }
+                productSales[product.name].sales += product.sales;
+            });
+        });
+
+        return Object.values(productSales);
+    };
+
+
     const aggregateData = (data) => {
         const aggregated = data.reduce((acc, item) => {
-            const existingProduct = acc.find(p => p.name === item.name);
-            if (existingProduct) {
-                existingProduct.sales += item.sales;
-                existingProduct.quantity += item.quantity;
+            // console.log("Processing Item:", item); 
+
+            const existingTransaction = acc.find(t => t.transactionId === item.transactionId);
+
+            // Handle existing transaction
+            if (existingTransaction) {
+                existingTransaction.sales += Number(item.sales);
+                existingTransaction.quantity += Number(item.quantity);
+
+                // Check if the product already exists in the existing transaction
+                const existingProduct = existingTransaction.products.find(p => p.name === item.name);
+                if (existingProduct) {
+                    // Update quantity and sales for the existing product
+                    existingProduct.quantity += Number(item.quantity);
+                    existingProduct.sales += Number(item.sales); // Update sales if necessary
+                } else {
+                    // Add new product to the existing transaction
+                    existingTransaction.products.push({
+                        name: item.name,
+                        price: item.price,
+                        quantity: Number(item.quantity),
+                        sales: Number(item.sales) // Initialize sales for the new product
+                    });
+                }
             } else {
-                acc.push({ ...item });
+                // Create a new transaction entry if it doesn't exist
+                acc.push({
+                    transactionId: item.transactionId,
+                    customerName: item.customerName,
+                    date: item.date,
+                    sales: Number(item.sales), // Initialize sales for the new transaction
+                    quantity: Number(item.quantity), // Initialize quantity for the new transaction
+                    products: [{
+                        name: item.name,
+                        price: item.price,
+                        quantity: Number(item.quantity),
+                        sales: Number(item.sales) // Initialize sales for the product
+                    }],
+                });
             }
+
             return acc;
         }, []);
+
         return aggregated;
     };
-    
-    
+
+
     // useEffect(()=>{},[]) Handle Total Spent Coming form POS
 
 
 
     const [showMore, setShowMore] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
-    const aggregatedData = aggregateData(saleData);
+
+    const aggregatedData = saleData
+    // console.log(aggregatedData);
     const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, transactionId: null });
-    const totalSales = aggregatedData.reduce((sum, item) => sum + item.sales, 0);
-    const totalQuantitySold = aggregatedData.reduce((sum, item) => sum + Number(item.quantity), 0);
-    const totalSpent=(localStorage.getItem('totalamount'))
-    const displayedData = showMore ? saleData : saleData.slice(0, 10);
+    const totalSales = saleData.reduce((sum, item) => sum + item.sales, 0);
+    const totalQuantitySold = saleData.reduce((sum, item) => sum + Number(item.quantity), 0);
+
+    const displayedData = showMore ? aggregatedData : aggregatedData.slice(0, 10);
 
     const handleRowClick = (transaction) => {
         setSelectedTransaction(transaction);
@@ -72,10 +152,10 @@ const SalesAnalysis = () => {
     const closeModal = () => {
         setSelectedTransaction(null);
     };
-    const handleDeleteClick = (e, transactionId) => {
-        e.stopPropagation();
-        setDeleteConfirmation({ isOpen: true, transactionId });
-    };
+    // const handleDeleteClick = (e, transactionId) => {
+    //     e.stopPropagation();
+    //     setDeleteConfirmation({ isOpen: true, transactionId });
+    // };
     const closeDeleteConfirmation = () => {
         setDeleteConfirmation({ isOpen: false, transactionId: null });
     };
@@ -84,44 +164,44 @@ const SalesAnalysis = () => {
             closeModal();
         }
     };
-    const handleDeleteTransaction = () => {
-        const { transactionId } = deleteConfirmation;
-        // Filter out the transaction to be deleted from the saleData array
-        const updatedSalesData = saleData.filter((item) => item.transactionId !== transactionId);
+    // const handleDeleteTransaction = () => {
+    //     const { transactionId } = deleteConfirmation;
+    //     // Filter out the transaction to be deleted from the saleData array
+    //     const updatedSalesData = saleData.filter((item) => item.transactionId !== transactionId);
 
-        // Update state to reflect the deletion
-        setSalesData(updatedSalesData);
+    //     // Update state to reflect the deletion
+    //     setSalesData(updatedSalesData);
 
-        // Re-structure sales data into an array to update localStorage
-        const updatedLocalStorageData = [];
+    //     // Re-structure sales data into an array to update localStorage
+    //     const updatedLocalStorageData = [];
 
-        updatedSalesData.forEach(item => {
-            const existingSale = updatedLocalStorageData.find(sale => sale.customerName === item.customerName);
+    //     updatedSalesData.forEach(item => {
+    //         const existingSale = updatedLocalStorageData.find(sale => sale.customerName === item.customerName);
 
-            if (existingSale) {
-                existingSale.products.push({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    sales: item.sales
-                });
-            } else {
-                updatedLocalStorageData.push({
-                    customerName: item.customerName,
-                    products: [{
-                        name: item.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                        sales: item.sales
-                    }]
-                });
-            }
-        });
+    //         if (existingSale) {
+    //             existingSale.products.push({
+    //                 name: item.name,
+    //                 price: item.price,
+    //                 quantity: item.quantity,
+    //                 sales: item.sales
+    //             });
+    //         } else {
+    //             updatedLocalStorageData.push({
+    //                 customerName: item.customerName,
+    //                 products: [{
+    //                     name: item.name,
+    //                     price: item.price,
+    //                     quantity: item.quantity,
+    //                     sales: item.sales
+    //                 }]
+    //             });
+    //         }
+    //     });
 
-        // Update the localStorage with the updated sales data
-        localStorage.setItem('allSalesData', JSON.stringify(updatedLocalStorageData));
-        closeDeleteConfirmation();
-    };
+    //     // Update the localStorage with the updated sales data
+    //     localStorage.setItem('allSalesData', JSON.stringify(updatedLocalStorageData));
+    //     closeDeleteConfirmation();
+    // };
 
 
     return (
@@ -137,17 +217,17 @@ const SalesAnalysis = () => {
                         </div>
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Total Product Sales (Quantity)</h2>
-                            <p className="text-2xl text-gray-600 font-bold">₹{totalQuantitySold}</p>
+                            <p className="text-2xl text-gray-600 font-bold">{totalQuantitySold}</p>
                         </div>
-                   
-                       
+
+
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Total Amount Spent </h2>
-                            <p className="text-2xl text-gray-600 font-bold">{(totalSpent)}</p>
+                            <p className="text-2xl text-gray-600 font-bold">₹{(totalSpent)}</p>
                         </div>
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Revenue</h2>
-                            <p className="text-2xl text-gray-600 font-bold">{(-1)*(totalSpent-totalSales)}</p>
+                            <p className="text-2xl text-gray-600 font-bold">₹{  (totalSpent - totalSales)}</p>
                         </div>
                     </div>
 
@@ -168,20 +248,20 @@ const SalesAnalysis = () => {
                                             <td className="text-gray-600 py-3">{item.transactionId}</td>
                                             <td className="text-gray-600 py-3">{item.customerName}</td>
                                             <td className="text-gray-600 py-3">₹{item.sales}</td>
-                                            <td>
+                                            {/* <td>
                                                 <button
                                                     className="text-red-300 hover:underline"
                                                     onClick={(e) => handleDeleteClick(e, item.transactionId)}
                                                 >
                                                    <Trash size={18} />
                                                 </button>
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                        {saleData.length > 10 && (
+                        {aggregatedData.length > 10 && (
                             <button className="mt-2 text-blue-500 hover:underline" onClick={() => setShowMore(!showMore)}>
                                 {showMore ? 'SEE LESS' : 'SEE MORE'}
                             </button>
@@ -192,7 +272,7 @@ const SalesAnalysis = () => {
                         <h2 className="text-lg text-gray-600 font-semibold">Product Sales Overview</h2>
                         <div className="h-[400px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={aggregatedData} margin={{ top: 40, right: 10, bottom: 10, left: 10 }}>
+                                <BarChart data={graphData} margin={{ top: 40, right: 10, bottom: 10, left: 10 }}>
                                     <CartesianGrid />
                                     <XAxis dataKey="name" />
                                     <YAxis />
@@ -214,13 +294,22 @@ const SalesAnalysis = () => {
                                 <h2 className="text-xl font-bold mb-4">Transaction Details</h2>
                                 <p className="mb-2"><strong>Transaction ID:</strong> {selectedTransaction.transactionId}</p>
                                 <p className="mb-2"><strong>Customer Name:</strong> {selectedTransaction.customerName}</p>
-                                <p className="mb-2"><strong>Product:</strong> {selectedTransaction.name}</p>
-                                <p className="mb-2"><strong>Price (Per Product):</strong> ₹{selectedTransaction.price}</p>
-                                <p className="mb-2"><strong>Quantity:</strong> {selectedTransaction.quantity}</p>
-                                <p><strong>Sales:</strong> ₹{selectedTransaction.sales}</p>
+                                <p className="mb-2"><strong>Date:</strong> {selectedTransaction.date}</p>
+                                <h3 className= "font-bold text-lg mt-4 ">Products:</h3>
+                                {selectedTransaction.products.map((product, index) => (
+                                    <div key={index} className="mb-2">
+                                        <p><strong>Product:</strong> {product.name}</p>
+                                        <p><strong>Price (Per Product):</strong> ₹{product.price}</p>
+                                        <p><strong>Quantity:</strong> {product.quantity}</p>
+                                        <p><strong>Sales:</strong> ₹{product.sales}</p>
+                                    </div>
+                                ))}
+                                <p className="mt-4"><strong>Total Quantity:</strong> {selectedTransaction.quantity}</p>
+                                <p className=""><strong>Total Sales:</strong> ₹{selectedTransaction.sales}</p>
                             </div>
                         </div>
                     )}
+
                     {deleteConfirmation.isOpen && (
                         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                             <div className="bg-white p-6 rounded-lg shadow-lg">

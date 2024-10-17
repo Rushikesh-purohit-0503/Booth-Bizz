@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import DeleteExpensePopup from './PopUp/DeleteExpensePopup';
 import EditExpensePopup from './PopUp/EditExpensePopup';
 import AddExpensePopup from './PopUp/AddExpensePopup';
@@ -6,71 +6,81 @@ import Left from './Left';
 import Right from './Right';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import StallManagement from '../../firebase/Backend/stallManagement'; // Adjust the path as necessary
 
 function ExpenseTracker() {
-    const navigate = useNavigate()
-    const authStatus = useSelector((state)=>state.auth.status);
+    const navigate = useNavigate();
+    const authStatus = useSelector((state) => state.auth.status);
+    const stall = useSelector((state) => state.stall.clickedStall);
+    const user = useSelector((state) => state.auth.userData); // Ensure you have user data
 
-
-    const [expenses, setExpenses] = useState([
-        // { date: '2024-09-15', description: 'Stall DP', category: 'Set-up cost', amount: 2000 },
-        // { date: '2024-09-18', description: 'Nachos Box', category: 'Set-up cost', amount: 500 },
-    ]);
+    // Initialize expenses as an empty array
+    const [expenses, setExpenses] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [expenseToDelete, setExpenseToDelete] = useState(null);
-    const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount),0);
+    const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount), 0);
 
-    
-    const stall = useSelector((state)=>state.stall.clickedStall)
+    useEffect(() => {
+        const fetchExpenses = async () => {
+            const stallManagement = new StallManagement({uid:user.uid});
+            try {
+                const fetchedExpenses = await stallManagement.getExpenses(stall.id);
+                // Ensure fetchedExpenses is an array
+                setExpenses(Array.isArray(fetchedExpenses) ? fetchedExpenses : []);
+            } catch (error) {
+                console.error("Error fetching expenses:", error);
+            }
+        };
 
+        fetchExpenses();
+    }, [stall.id, user]); // Include stall.id and user in the dependency array
 
-  useEffect(() => {
-    // Set total amount in local storage whenever it changes
-    localStorage.setItem('totalamount', totalAmount);
+    useEffect(() => {
+        if (!authStatus) {
+            navigate('/signin');
+        }
+    }, [authStatus, navigate]);
 
-    // Check authentication status and navigate if not authenticated
-    if (!authStatus) {
-        navigate('/signin');
-    }
-
-    // Load stored expenses from local storage
-    const storedExpenses = localStorage.getItem('expenses');
-    if (storedExpenses) {
-        setExpenses(JSON.parse(storedExpenses));
-    }
-}, [authStatus, navigate, totalAmount]);
-
-    localStorage.setItem('totalamount',totalAmount)
-
-
-
-
-    const handleAddExpense = (data) => {
-        const newExpenses = [...expenses, data];
-        setExpenses(newExpenses);
-        localStorage.setItem('expenses', JSON.stringify(newExpenses));
-        setIsPopupOpen(false);
+    const handleAddExpense = async (data) => {
+        const stallManagement = new StallManagement(user);
+        try {
+            await stallManagement.addExpense(stall.id, data);
+            setExpenses((prev) => [...prev, data]);
+            setIsPopupOpen(false);
+        } catch (error) {
+            console.error("Error adding expense:", error);
+        }
     };
 
-    const handleEditExpense = (data) => {
-        const updatedExpenses = expenses.map(expense =>
-            expense.description === editingExpense.description ? {...expense,...data }: expense
-        );
-        setExpenses(updatedExpenses);
-        localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
-        setIsEditPopupOpen(false);
-        setEditingExpense(null);
+    const handleEditExpense = async (data) => {
+        const stallManagement = new StallManagement(user);
+        try {
+            await stallManagement.updateExpense(stall.id, editingExpense.id, data);
+            const updatedExpenses = expenses.map(expense =>
+                expense.id === editingExpense.id ? { ...expense, ...data } : expense
+            );
+            setExpenses(updatedExpenses);
+            setIsEditPopupOpen(false);
+            setEditingExpense(null);
+        } catch (error) {
+            console.error("Error updating expense:", error);
+        }
     };
 
-    const handleDeleteExpense = () => {
-        const updatedExpenses = expenses.filter(expense => expense.description !== expenseToDelete.description);
-        setExpenses(updatedExpenses);
-        localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
-        setIsDeletePopupOpen(false);
-        setExpenseToDelete(null);
+    const handleDeleteExpense = async () => {
+        const stallManagement = new StallManagement(user);
+        try {
+            await stallManagement.deleteExpense(stall.id, expenseToDelete.id);
+            const updatedExpenses = expenses.filter(expense => expense.id !== expenseToDelete.id);
+            setExpenses(updatedExpenses);
+            setIsDeletePopupOpen(false);
+            setExpenseToDelete(null);
+        } catch (error) {
+            console.error("Error deleting expense:", error);
+        }
     };
 
     const openEditPopup = (expense) => {
@@ -85,7 +95,12 @@ function ExpenseTracker() {
 
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
-            <Left stallName={stall.stallName} onStallClick={()=>(navigate('/stall-details'))} onProductClick={()=>(navigate('/product'))} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))}/>
+            <Left
+                stallName={stall.stallName}
+                onStallClick={() => (navigate('/stall-details'))}
+                onProductClick={() => (navigate('/product'))}
+                onClickSalesAnalysis={() => (navigate('/sales-analysis'))}
+            />
             <Right
                 expenses={expenses}
                 totalAmount={totalAmount}
@@ -93,8 +108,8 @@ function ExpenseTracker() {
                 onEditExpense={openEditPopup}
                 onDeleteExpense={openDeletePopup}
             />
-             {isPopupOpen && (
-                <AddExpensePopup 
+            {isPopupOpen && (
+                <AddExpensePopup
                     isOpen={isPopupOpen}
                     onClose={() => setIsPopupOpen(false)}
                     onSubmit={handleAddExpense}
@@ -108,7 +123,6 @@ function ExpenseTracker() {
                     existingData={editingExpense}
                 />
             )}
-
             {isDeletePopupOpen && (
                 <DeleteExpensePopup
                     isOpen={isDeletePopupOpen}

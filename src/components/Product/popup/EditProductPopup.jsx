@@ -32,14 +32,14 @@ const EditProductPopup = ({ isOpen, onClose, onSubmit, existingData }) => {
                     />
                     {errors.price && <span className="text-red-500 text-sm mb-2">{errors.price.message}</span>}
 
-                    {/* <label htmlFor="edit-quantity" className="mb-1 text-left">Quantity</label>
+                    <label htmlFor="edit-quantity" className="mb-1 text-left">Quantity</label>
                     <input 
                         type="number" 
                         id="edit-quantity" 
                         {...register("quantity", { required: "Quantity is required" })}
                         className="mb-3 p-2 text-base border border-gray-300 rounded"
                     />
-                    {errors.quantity && <span className="text-red-500 text-sm mb-2">{errors.quantity.message}</span>} */}
+                    {errors.quantity && <span className="text-red-500 text-sm mb-2">{errors.quantity.message}</span>}
 
                     <button 
                         type="submit" 

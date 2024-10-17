@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, useMemo } from 'react';
 import AddProductPopup from './popup/AddProductPopup';
 import DeleteProductPopup from './popup/DeleteProductPopup';
 import EditProductPopup from './popup/EditProductPopup';
@@ -7,83 +6,90 @@ import Left from '../ExpenseTracker/Left';
 import RightProduct from './RightProduct'; 
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProducts as reduxsetProducts,addProduct,editProduct,deleteProduct } from '../../store/productSlice';
+import { setProducts as reduxsetProducts, addProduct, editProduct, deleteProduct } from '../../store/productSlice';
+import StallManagement from '../../firebase/Backend/stallManagement'; // Import StallManagement
+
 function Product() {
-    const [products, setProducts] = useState([
-        { name: 'Product 1', price: 100, quantity: 10 },
-        { name: 'Product 2', price: 200, quantity: 20 },
-    ]);
-    const dispatch = useDispatch()
+    const [products, setProducts] = useState([]);
+    const dispatch = useDispatch();
     const reduxProducts = useSelector(state => state.product);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [productToDelete, setProductToDelete] = useState(null);
-    const navigate = useNavigate()
-    const authStatus = useSelector((state) => (state.auth.status))
-    const stall = useSelector((state)=>state.stall)
+    const navigate = useNavigate();
+    const authStatus = useSelector((state) => (state.auth.status));
+    const stall = useSelector((state) => state.stall.clickedStall);
+    const user = useSelector((state) => state.auth.userData);
+
+    const stallManagement =useMemo(()=> new StallManagement({uid:user.uid}),[user.uid]) // Ensure to pass the user
+
     useEffect(() => {
         if (!authStatus) {
-            navigate('/signin')
+            navigate('/signin');
         }
-    }, [authStatus, navigate])
+    }, [authStatus, navigate]);
 
-
-
-
-    // Save products to localStorage whenever the products state changes
- 
-
-
-    // Retrieve products from localStorage on component mount
+    // Fetch products when the component mounts
     useEffect(() => {
-        const storedProducts = localStorage.getItem('products');
-        if (storedProducts) {
-            setProducts(JSON.parse(storedProducts));
-        }
-    }, []);
+        const fetchProducts = async () => {
+            try {
+                const fetchedProducts = await stallManagement.getProducts(stall.id);
+                setProducts(fetchedProducts);
+                dispatch(reduxsetProducts(fetchedProducts)); // Update Redux state
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
 
-    useEffect(() => {
-        const storedProducts = localStorage.getItem('products');
-        if (storedProducts) {
-            dispatch(reduxsetProducts(JSON.parse(storedProducts)))
-        }
-    }, [dispatch]);
-        
+        fetchProducts();
+    }, [dispatch, stallManagement, stall.id]);
+
+    // Sync Redux state with localStorage
     useEffect(() => {
         localStorage.setItem('products', JSON.stringify(reduxProducts));
     }, [reduxProducts]);
 
-
-    useEffect(() => {
-        localStorage.setItem('products', JSON.stringify(products));
-    }, [products]);
-
-
-    const handleAddProduct = (data) => {
-        const newProducts = [...products, data];
-        dispatch(addProduct(data))
-        setProducts(newProducts);
-        setIsPopupOpen(false);  // Close the Add Product popup
+    const handleAddProduct = async (data) => {
+        try {
+            await stallManagement.addProduct(stall.id, data);
+            dispatch(addProduct(data));
+            setProducts([...products, data]);
+            setIsPopupOpen(false);  // Close the Add Product popup
+        } catch (error) {
+            console.error("Error adding product:", error);
+        }
     };
 
-    const handleEditProduct = (data) => {
-        const updatedProducts = products.map((product) =>
-            product.name === editingProduct.name ? data : product
-        );
-        dispatch(editProduct(data))
-        setProducts(updatedProducts);
-        setIsEditPopupOpen(false);  // Close the Edit Product popup
-        setEditingProduct(null);
+    const handleEditProduct = async (data) => {
+        try {
+            const productId = editingProduct.id; // Get the ID of the editing product
+            await stallManagement.updateProduct(stall.id, productId, data);
+            dispatch(editProduct(data));
+            const updatedProducts = products.map((product) =>
+                product.name === editingProduct.name ? data : product
+            );
+            setProducts(updatedProducts);
+            setIsEditPopupOpen(false);  // Close the Edit Product popup
+            setEditingProduct(null);
+        } catch (error) {
+            console.error("Error editing product:", error);
+        }
     };
 
-    const handleDeleteProduct = () => {
-        const updatedProducts = products.filter((product) => product !== productToDelete);
-        dispatch(deleteProduct(productToDelete))
-        setProducts(updatedProducts);
-        setIsDeletePopupOpen(false);  // Close the Delete Product popup
-        setProductToDelete(null);
+    const handleDeleteProduct = async () => {
+        try {
+            const productId = productToDelete.id; // Get the ID of the product to delete
+            await stallManagement.deleteProduct(stall.id, productId);
+            dispatch(deleteProduct(productToDelete));
+            const updatedProducts = products.filter((product) => product !== productToDelete);
+            setProducts(updatedProducts);
+            setIsDeletePopupOpen(false);  // Close the Delete Product popup
+            setProductToDelete(null);
+        } catch (error) {
+            console.error("Error deleting product:", error);
+        }
     };
 
     const openEditPopup = (product) => {
@@ -95,12 +101,18 @@ function Product() {
         setProductToDelete(product);
         setIsDeletePopupOpen(true);
     };
-
+    
     const totalAmount = products.reduce((total, product) => (total + Number(product.price)), 0);
     
     return (
         <div className="flex min-h-screen bg-pink-50 p-6">
-            <Left stallName={stall.stall.name} onStallClick={() => navigate('/stall-details')} onClickSalesAnalysis={()=>(navigate('/sales-analysis'))} onProductClick={() => navigate('/product')} onClickExpensetaker={() => (navigate('/expense-tracker'))} />
+            <Left 
+                stallName={stall.stallName} 
+                onStallClick={() => navigate('/stall-details')} 
+                onClickSalesAnalysis={() => navigate('/sales-analysis')} 
+                onProductClick={() => navigate('/product')} 
+                onClickExpensetaker={() => (navigate('/expense-tracker'))} 
+            />
             <RightProduct
                 products={products}
                 onAddProduct={() => setIsPopupOpen(true)}

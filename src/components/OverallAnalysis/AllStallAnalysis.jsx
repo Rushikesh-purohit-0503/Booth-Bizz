@@ -116,14 +116,6 @@ const AllStallsAnalysis = () => {
                                             <td className="text-gray-600 py-3">₹{item.expense.toLocaleString()}</td>
                                             <td className="text-gray-600 py-3">₹{item.sales.toLocaleString()}</td>
                                             <td className="text-gray-600 py-3">₹{(item.sales - item.expense).toLocaleString()}</td>
-                                            <td className="py-3">
-                                                <button
-                                                    className="text-red-300 hover:underline"
-                                                    onClick={(e) => handleDeleteClick(e, index)}
-                                                >
-                                                    <Trash size={18} />
-                                                </button>
-                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
