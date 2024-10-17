@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import stall1 from '../../assets/stall-1.jpeg';
 import stall2 from '../../assets/stall-2.jpeg';
 import stall3 from '../../assets/stall-3.jpeg';
@@ -26,7 +26,7 @@ const Dashboard = () => {
     ];
 
     // Create an instance of StallManagement
-    const stallManagement = new StallManagement({ uid: uid }); // Pass the correct user object
+    const stallManagement = useMemo(()=> new StallManagement({ uid: uid }),[uid]) // Pass the correct user object
 
     const handleAddStallClick = () => {
         setIsPopupVisible(true);
@@ -42,7 +42,7 @@ const Dashboard = () => {
             setStallDetails(updatedStalls);
 
             // Remove from local storage
-            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
+            // localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
 
             // Call the backend to delete the stall
             await stallManagement.deleteStall(stallId);
@@ -68,7 +68,7 @@ const Dashboard = () => {
             setStallDetails(updatedStalls);
 
             // Save the updated stalls to localStorage
-            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
+            // localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
 
             setIsPopupVisible(false);
         } catch (error) {
@@ -96,7 +96,7 @@ const Dashboard = () => {
                 setStallDetails(fetchedStalls);
 
                 // Optionally save to localStorage if needed
-                localStorage.setItem('stallDetails', JSON.stringify(fetchedStalls));
+                // localStorage.setItem('stallDetails', JSON.stringify(fetchedStalls));
             } catch (error) {
                 console.error("Error fetching stalls:", error);
             }

@@ -337,6 +337,80 @@ class StallManagement {
       throw error;
     }
   }
+  // 1. Calculate Total Expenses for a Stall
+  async calculateTotalExpenses(stallId) {
+    try {
+      const expenseRef = collection(
+        db,
+        "users",
+        this.user.uid,
+        "stalls",
+        stallId,
+        "expenses"
+      );
+      const snapshot = await getDocs(expenseRef);
+      const totalExpenses = snapshot.docs.reduce(
+        (sum, doc) => sum + doc.data().amount,
+        0
+      );
+      return totalExpenses;
+    } catch (error) {
+      console.error("Error calculating total expenses", error);
+      throw error;
+    }
+  }
+
+  // 2. Calculate Total Sales for a Stall
+  async calculateTotalSales(stallId) {
+    try {
+      const posRef = collection(
+        db,
+        "users",
+        this.user.uid,
+        "stalls",
+        stallId,
+        "pos"
+      );
+      const snapshot = await getDocs(posRef);
+      const totalSales = snapshot.docs.reduce(
+        (sum, doc) => sum + doc.data().totalAmount,
+        0
+      );
+      return totalSales;
+    } catch (error) {
+      console.error("Error calculating total sales", error);
+      throw error;
+    }
+  }
+
+  // 3. Fetch All Stall Data with Aggregated Sales and Expenses
+  async getStallsWithStats() {
+    try {
+      const stallSnapshot = await getDocs(this.userCollection);
+      const stalls = stallSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const stallsWithStats = await Promise.all(
+        stalls.map(async (stall) => {
+          const totalExpenses = await this.calculateTotalExpenses(stall.id);
+          const totalSales = await this.calculateTotalSales(stall.id);
+          return {
+            ...stall,
+            totalExpenses,
+            totalSales,
+            revenue: totalExpenses - totalSales,
+          };
+        })
+      );
+
+      return stallsWithStats;
+    } catch (error) {
+      console.error("Error fet  ching stalls with stats", error);
+      throw error;
+    }
+  }
 }
 
 export default StallManagement;

@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import HomeImg from "../assets/HomePage.png";
@@ -39,7 +39,7 @@ const Section = ({ title, description, image, linkText, linkTo, reverse }) => (
 
 function HomePage() {
   const authStatus = useSelector((state) => state.auth.status);
-  const location=useLocation();
+  const location = useLocation();
 
 
 
@@ -55,9 +55,9 @@ function HomePage() {
       }
     }
   }, [location.state]);
-  
-  
-  const heroContent = ( 
+
+
+  const heroContent = (
     <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12 mb-28">
       <div className="max-w-xl">
         <h1 className="text-5xl font-bold mb-4">
@@ -71,7 +71,7 @@ function HomePage() {
           BoothBiz streamlines your business with intuitive management tools and smart sales solutions for any event or market.
         </p>
         <Link
-          to={authStatus ? '/events':'/signin'}
+          to={authStatus ? '/events' : '/signin'}
           className="inline-block bg-red-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-red-400 transition-transform transform hover:-translate-y-1 hover:scale-105"
         >
           Explore
@@ -124,19 +124,19 @@ function HomePage() {
       {
         authStatus && (
           <>
-          <section id='#service'>
-            <h1  className="text-4xl md:text-5xl font-bold text-center mb-12 mt-16">
-              Our Services
-            </h1>
-            {
-              sections.map((section, index) => (
-                <>
-                  <Section key={index} {...section} />
+            <section id='#service'>
+              <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 mt-16">
+                Our Services
+              </h1>
+              {
+                sections.map((section, index) => (
+                  <>
+                    <Section key={index} {...section} />
 
-                </>
-              )
-              )
-            }
+                  </>
+                )
+                )
+              }
             </section>
             <section id="#contact">
               <ContactUs />
