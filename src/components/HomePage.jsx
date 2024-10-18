@@ -124,7 +124,7 @@ function HomePage() {
       {
         authStatus && (
           <>
-            <section id='#service'>
+            <section id='services'>
               <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 mt-16">
                 Our Services
               </h1>
@@ -138,7 +138,7 @@ function HomePage() {
                 )
               }
             </section>
-            <section id="#contact">
+            <section id="contact">
               <ContactUs />
             </section>
           </>
@@ -146,10 +146,10 @@ function HomePage() {
       }
       {!authStatus && (
         <>
-          <section id="#service">
+          <section id="services">
             <Service />
           </section>
-          <section id="#contact">
+          <section id="contact">
             <ContactUs />
           </section>
         </>
