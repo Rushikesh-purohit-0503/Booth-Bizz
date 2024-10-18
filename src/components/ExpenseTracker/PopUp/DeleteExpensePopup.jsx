@@ -34,7 +34,7 @@ const DeleteExpensePopup = ({ isOpen, onClose, onConfirm }) => {
           
           <div className="flex justify-center space-x-4 w-full">
             <button
-              className="bg-red-300 text-white py-2 px-6 rounded-lg hover:bg-red-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+              className="bg-red-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-red-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
               onClick={onConfirm}
             >
               Delete

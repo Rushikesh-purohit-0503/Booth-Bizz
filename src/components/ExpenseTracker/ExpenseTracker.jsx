@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useMemo } from 'react';
 import DeleteExpensePopup from './PopUp/DeleteExpensePopup';
 import EditExpensePopup from './PopUp/EditExpensePopup';
 import AddExpensePopup from './PopUp/AddExpensePopup';
@@ -23,14 +23,15 @@ function ExpenseTracker() {
     const [expenseToDelete, setExpenseToDelete] = useState(null);
     const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount), 0);
 
-    const stallManagement = new StallManagement({uid:user.uid});
-   
+    const stallManagement = useMemo(()=>new StallManagement({uid:user.uid}),[user.uid]) 
+    
     useEffect(() => {
         
         if (!authStatus) {
             navigate('/signin');
         }
     }, [authStatus, navigate]);
+    
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
@@ -43,10 +44,10 @@ function ExpenseTracker() {
         };
 
         fetchExpenses();
-    }, [stall.id, user]); // Include stall.id and user in the dependency array
+    }, [stall.id, user.uid]); // Include stall.id and user in the dependency array
 
     const handleAddExpense = async (data) => {
-        const stallManagement = new StallManagement(user);
+
         try {
             await stallManagement.addExpense(stall.id, data);
             setExpenses((prev) => [...prev, data]);
@@ -57,7 +58,7 @@ function ExpenseTracker() {
     };
 
     const handleEditExpense = async (data) => {
-        const stallManagement = new StallManagement(user);
+       
         try {
             await stallManagement.updateExpense(stall.id, editingExpense.id, data);
             const updatedExpenses = expenses.map(expense =>
@@ -72,7 +73,7 @@ function ExpenseTracker() {
     };
 
     const handleDeleteExpense = async () => {
-        const stallManagement = new StallManagement(user);
+        // const stallManagement = new StallManagement(user);
         try {
             await stallManagement.deleteExpense(stall.id, expenseToDelete.id);
             const updatedExpenses = expenses.filter(expense => expense.id !== expenseToDelete.id);
@@ -86,7 +87,7 @@ function ExpenseTracker() {
     };
 
     const openEditPopup = (expense) => {
-        setEditingExpense(...expense,{expenseId:expense.id});
+        setEditingExpense(expense);
         setIsEditPopupOpen(true);
     };
 
