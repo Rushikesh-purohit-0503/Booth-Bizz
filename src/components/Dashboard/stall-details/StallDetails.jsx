@@ -3,9 +3,10 @@ import Left from '../../ExpenseTracker/Left'
 // import Right from '../ExpenseTracker/Right'
 import { useNavigate } from 'react-router-dom'
 import stall1 from '../../../assets/stall-1.jpeg'; // Replace with the relevant stall image
-import RightAnalysis from './RightStallDetails';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { setStallName } from '../../../store/stallSlice';
+import RightStallDetails from './RightStallDetails';
 
 
 function StallDetails() {
@@ -28,9 +29,7 @@ function StallDetails() {
   //     }
   //   }
   // }, [dispatch]);
-  const eventName = "WhiteFlea";
-  const product = "Food";
-  const location = "Surat";
+
 
   const onExpenseClick = () => ((navigate('/expense-tracker')))
   return (
@@ -41,7 +40,7 @@ function StallDetails() {
         onProductClick={() => (navigate('/product'))}
         onClickSalesAnalysis={() => (navigate('/sales-analysis'))}
       />
-      <RightAnalysis src={stall.image} product={stall.productCategory} eventName={stall.eventName} location={stall.city} />
+      <RightStallDetails src={stall.image} product={stall.productCategory} eventName={stall.eventName} location={stall.city} />
     </div>
   )
 }

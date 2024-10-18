@@ -231,7 +231,7 @@ function EventPage() {
             <img
               src={selectedEvent.imageUrl}
               alt={selectedEvent.eventName}
-              className="w-full h-80 object-fill rounded-2xl mb-4" // Set fixed height for image
+              className="w-full h-72 object-fill rounded-lg mb-4" // Set fixed height for image
             />
             <h3 id="event-detail-eventName" className="text-2xl font-bold mb-2">
               {selectedEvent.eventName}

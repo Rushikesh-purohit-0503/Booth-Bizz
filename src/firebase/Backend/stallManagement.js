@@ -64,18 +64,33 @@ class StallManagement {
     }
   }
 
-  // 4. Delete a Stall
   async deleteStall(stallId) {
     try {
+      // Get references to subcollections (replace 'subcollectionName' with actual names)
+      const subcollectionNames = ['expenses', 'pos', 'products'];
+      
+      // Loop through each subcollection and delete its documents
+      for (const subcollectionName of subcollectionNames) {
+        const subcollectionRef = collection(this.userCollection, stallId, subcollectionName);
+        const subcollectionDocs = await getDocs(subcollectionRef);
+        
+        // Delete each document in the subcollection
+        for (const doc of subcollectionDocs.docs) {
+          await deleteDoc(doc.ref);
+          console.log(`Document "${doc.id}" deleted from subcollection "${subcollectionName}".`);
+        }
+      }
+      
+      // Now delete the main stall document
       const stallDoc = doc(this.userCollection, stallId);
       await deleteDoc(stallDoc);
       console.log(`Stall "${stallId}" deleted successfully.`);
+      
     } catch (error) {
       console.error("Error deleting stall", error);
       throw error;
     }
   }
-
   // 5. Add Expense to a Stall
   async addExpense(stallId, { date, category, description, amount }) {
     try {
@@ -382,7 +397,24 @@ class StallManagement {
       throw error;
     }
   }
+  async contactUs({ name, email, subject, message }) {
+    try {
+      const feedbackRef = collection(db, "users", this.user.uid, "feedback");
 
+      await addDoc(feedbackRef, {
+        name,
+        email,
+        subject,
+        message,
+        submittedAt: new Date().toISOString(),
+      });
+
+      console.log(`Feedback from "${name}" added successfully.`);
+    } catch (error) {
+      console.error("Error adding feedback", error);
+      throw error;
+    }
+  }
   // 3. Fetch All Stall Data with Aggregated Sales and Expenses
   async getStallsWithStats() {
     try {
@@ -400,7 +432,7 @@ class StallManagement {
             ...stall,
             totalExpenses,
             totalSales,
-            revenue: totalExpenses - totalSales,
+            revenue: (-1)*(totalSales - totalExpenses),
           };
         })
       );

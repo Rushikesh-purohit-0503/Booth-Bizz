@@ -26,6 +26,7 @@ function ExpenseTracker() {
     const stallManagement = new StallManagement({uid:user.uid});
    
     useEffect(() => {
+        
         if (!authStatus) {
             navigate('/signin');
         }
@@ -45,7 +46,7 @@ function ExpenseTracker() {
     }, [stall.id, user]); // Include stall.id and user in the dependency array
 
     const handleAddExpense = async (data) => {
-      
+        const stallManagement = new StallManagement(user);
         try {
             await stallManagement.addExpense(stall.id, data);
             setExpenses((prev) => [...prev, data]);
@@ -56,7 +57,7 @@ function ExpenseTracker() {
     };
 
     const handleEditExpense = async (data) => {
-
+        const stallManagement = new StallManagement(user);
         try {
             await stallManagement.updateExpense(stall.id, editingExpense.id, data);
             const updatedExpenses = expenses.map(expense =>
@@ -71,11 +72,12 @@ function ExpenseTracker() {
     };
 
     const handleDeleteExpense = async () => {
-     
+        const stallManagement = new StallManagement(user);
         try {
             await stallManagement.deleteExpense(stall.id, expenseToDelete.id);
             const updatedExpenses = expenses.filter(expense => expense.id !== expenseToDelete.id);
             setExpenses(updatedExpenses);
+            
             setIsDeletePopupOpen(false);
             setExpenseToDelete(null);
         } catch (error) {
@@ -84,7 +86,7 @@ function ExpenseTracker() {
     };
 
     const openEditPopup = (expense) => {
-        setEditingExpense(expense);
+        setEditingExpense(...expense,{expenseId:expense.id});
         setIsEditPopupOpen(true);
     };
 

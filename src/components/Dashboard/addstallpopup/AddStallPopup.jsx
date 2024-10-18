@@ -90,7 +90,7 @@ const AddStallPopup = ({ onSave, onCancel }) => {
             required
           />
         </div>
-        <div className="mt-2">
+        {/* <div className="mt-2">
           <label className="block text-sm font-medium text-gray-700">Stall Image</label>
           <input
             type="file"
@@ -98,7 +98,7 @@ const AddStallPopup = ({ onSave, onCancel }) => {
             className="mt-1 p-2 w-full border border-gray-300 rounded"
             required
           />
-        </div>
+        </div> */}
         <div className="flex gap-6 mt-4">
           <button onClick={handleSave} className="w-full py-2 rounded bg-red-300 text-black hover:bg-red-400">Save</button>
           <button onClick={onCancel} className="w-full py-2 rounded bg-gray-300 text-black hover:bg-gray-400">Cancel</button>

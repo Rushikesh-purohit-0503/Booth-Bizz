@@ -5,8 +5,7 @@ import stall3 from '../../assets/stall-3.jpeg';
 import DashboardImg from './DashboardImage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStall as reduxAddStall, setStallName as reduxsetStallName } from '../../store/stallSlice';
-import { clickedStall, deleteStall as reduxDeleteStall } from '../../store/stallSlice';
+import { addStall as reduxAddStall, deleteStall as reduxDeleteStall, clickedStall } from '../../store/stallSlice';
 import AddStallPopup from './addstallpopup/AddStallPopup';
 import StallManagement from '../../firebase/Backend/stallManagement'; // Update this path
 
@@ -18,94 +17,80 @@ const Dashboard = () => {
     const dispatch = useDispatch();
     const authStatus = useSelector((state) => state.auth.status);
     const userData = useSelector((state) => state.auth.userData);
-    const uid = userData.uid;
+    const uid = userData?.uid; // Check if uid exists
+
     const Img = [
-        { src: stall1, title: "Stall 1" },
-        { src: stall2, title: "Stall 2" },
-        { src: stall3, title: "Stall 3" },
+        { src: stall1, title: 'Stall 1' },
+        { src: stall2, title: 'Stall 2' },
+        { src: stall3, title: 'Stall 3' },
     ];
 
-    // Create an instance of StallManagement
-    const stallManagement = useMemo(()=> new StallManagement({ uid: uid }),[uid]) // Pass the correct user object
+    // Memoize the StallManagement instance to prevent unnecessary re-instantiation
+    const stallManagement = useMemo(() => new StallManagement({ uid }), [uid]);
 
-    const handleAddStallClick = () => {
-        setIsPopupVisible(true);
-    };
+    const handleAddStallClick = () => setIsPopupVisible(true);
 
     const handleDeleteStall = async (stall) => {
         try {
-            const stallId = stall.id; // Assuming each stall has a unique 'id' property
-            dispatch(reduxDeleteStall(stallId));
+            const stallId = stall.id;
+            await stallManagement.deleteStall(stallId); // Backend deletion
+            dispatch(reduxDeleteStall(stallId)); // Redux state update
 
-            // Remove the stall from the local stallDetails array
             const updatedStalls = stallDetails.filter((s) => s.id !== stallId);
-            setStallDetails(updatedStalls);
-
-            // Remove from local storage
-            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
-
-            // Call the backend to delete the stall
-            await stallManagement.deleteStall(stallId);
+            setStallDetails(updatedStalls); // Update local state
+            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls)); // Persist state
         } catch (error) {
-            console.error("Error deleting stall:", error);
+            console.error('Error deleting stall:', error);
         }
     };
 
     const handleSaveCard = async (details) => {
         try {
             const imagePath = Img[Math.floor(Math.random() * Img.length)].src;
-
             const newStall = {
                 ...details,
                 image: imagePath,
+                timestamp: Date.now(), // Add timestamp for sorting
             };
 
-            // Call the backend to add the stall
-            await stallManagement.addStall(newStall);
+            await stallManagement.addStall(newStall); // Backend save
+            dispatch(reduxAddStall(newStall)); // Redux state update
 
-            dispatch(reduxAddStall(newStall));
-            const updatedStalls = [...stallDetails, newStall];
-            setStallDetails(updatedStalls);
-
-            // Save the updated stalls to localStorage
-            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
-
-            setIsPopupVisible(false);
+            const updatedStalls = [...stallDetails, newStall].sort((a, b) => a.timestamp - b.timestamp);
+            setStallDetails(updatedStalls); // Update state with sorted stalls
+            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls)); // Persist state
+         
+            setIsPopupVisible(false); // Close the popup
         } catch (error) {
-            console.error("Error adding stall:", error);
+            console.error('Error adding stall:', error);
         }
     };
 
-    const handleClick = (stall) => {
-        dispatch(clickedStall(stall));
-        navigate('/stall-details');
+    const handleStallClick = (stall) => {
+        dispatch(clickedStall(stall)); // Store clicked stall in Redux
+        navigate('/stall-details'); // Navigate to details page
     };
 
-    const handleCancelPopup = () => {
-        setIsPopupVisible(false);
-    };
-
-    const handleOverallAnalysisClick = () => {
-        navigate('/overall-stalls-analysis');
-    }
+    const handleOverallAnalysisClick = () => navigate('/overall-stalls-analysis');
+    const handleCancelPopup = () => setIsPopupVisible(false);
 
     useEffect(() => {
         const fetchStalls = async () => {
             try {
-                const fetchedStalls = await stallManagement.getStalls(); // Implement this in StallManagement
-                setStallDetails(fetchedStalls);
+                const fetchedStalls = await stallManagement.getStalls(); // Fetch from backend
+                const sortedStalls = fetchedStalls.sort((a, b) => a.timestamp - b.timestamp); // Sort by timestamp
+                setStallDetails(sortedStalls); // Update local state
 
-                // Optionally save to localStorage if needed
-                // localStorage.setItem('stallDetails', JSON.stringify(fetchedStalls));
+                localStorage.setItem('stallDetails', JSON.stringify(sortedStalls)); // Persist state
             } catch (error) {
-                console.error("Error fetching stalls:", error);
+                console.error('Error fetching stalls:', error);
             }
         };
 
-        fetchStalls();
+        fetchStalls(); // Fetch stalls on component mount
 
         if (!authStatus) {
-            navigate('/signin');
+            navigate('/signin'); // Redirect if not authenticated
         }
     }, [authStatus, navigate, stallManagement]);
 
@@ -128,15 +113,17 @@ const Dashboard = () => {
                     </div>
 
                     {stallDetails.map((details, index) => (
+                        
                         <DashboardImg
-                            key={`dynamic-${index}`}
+                            key={`stall-${details.id || index}`}
                             src={details.image}
-                            onClick={() => handleClick(details)}
+                            onClick={() => handleStallClick(details)}
                             title={details.stallName}
                             stallNumber={details.stallNumber}
                             event={details.eventName}
                             onDelete={() => handleDeleteStall(details)}
                         />
+                        
                     ))}
                 </div>
 

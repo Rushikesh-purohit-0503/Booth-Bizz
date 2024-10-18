@@ -4,7 +4,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { GrLocation, GrMailOption, GrPhone } from "react-icons/gr";
 import { Link } from "react-router-dom";
 
-function ContactUs({id}) {
+function ContactUs() {
   return (
     <div  className="min-h-screen  py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

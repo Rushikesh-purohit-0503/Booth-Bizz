@@ -5,8 +5,9 @@ import RightPOS from './RightPOS';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProducts, updateProductQuantity } from '../../store/productSlice';
 import Modal from 'react-modal';
-import StallManagement from '../../firebase/Backend/stallManagement'; // Import StallManagement
-import '../../styles/Pospopup.css'
+import StallManagement from '../../firebase/Backend/stallManagement';
+import '../../styles/Pospopup.css';
+
 function POSSystem() {
   const navigate = useNavigate();
   const authStatus = useSelector((state) => (state.auth.status));
@@ -15,8 +16,8 @@ function POSSystem() {
   const [customerName, setCustomerName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.userData)
-  const stallManagement =useMemo(()=>new StallManagement({ uid: user.uid }),[user.uid])  // Ensure to pass the user
+  const user = useSelector((state) => state.auth.userData);
+  const stallManagement = useMemo(() => new StallManagement({ uid: user.uid }), [user.uid]);
 
   useEffect(() => {
     if (!authStatus) {
@@ -29,9 +30,7 @@ function POSSystem() {
     const fetchProducts = async () => {
       try {
         const fetchedProducts = await stallManagement.getProducts(stall.id);
-        // Dispatch the products to Redux
         dispatch(setProducts(fetchedProducts)); // Set products in the Redux store
-        // Initialize quantities
         fetchedProducts.forEach(product => {
           dispatch(updateProductQuantity({ name: product.name, quantity: 0 })); // Initialize quantities
         });
@@ -52,9 +51,8 @@ function POSSystem() {
   };
 
   const confirmSale = async () => {
-    
-
-    // Prepare sale data
+    const totalAmount = reduxProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
+  
     const saleData = {
       customerName,
       totalAmount,
@@ -63,38 +61,68 @@ function POSSystem() {
         price: product.price,
         quantity: product.quantity,
         sales: product.price * product.quantity,
-      }))
+      })),
     };
-
-    // Save the saleData to the backend
+  
     try {
+      // Only proceed if customerName and at least one product quantity is valid
+      if (!customerName || reduxProducts.every(product => product.quantity === 0)) {
+        alert("Please enter a valid customer name and ensure at least one product has been selected.");
+        return; // Prevent sale confirmation
+      }
+  
+      // Check stock availability before adding to POS
+      for (const product of reduxProducts) {
+        const originalProduct = await stallManagement.getProducts(stall.id).then(products => products.find(p => p.name === product.name));
+        const stockUpdate = originalProduct.quantity - product.quantity;
+  
+        if (stockUpdate < 0) {
+          alert(`${product.name} is out of stock!`);
+          return; // Prevent proceeding with sale
+        }
+      }
+  
+      // Proceed to add the sale data if all checks are passed
       await stallManagement.addPOS(stall.id, saleData); // Save the sale data
+  
+      // Update the backend stock after checkout
+      for (const product of reduxProducts) {
+        const originalProduct = await stallManagement.getProducts(stall.id).then(products => products.find(p => p.name === product.name));
+        const stockUpdate = originalProduct.quantity - product.quantity;
+  
+        // Update product quantity in the backend using originalProduct.id
+        await stallManagement.updateProduct(stall.id, originalProduct.id, { quantity: stockUpdate });
+      }
+  
+      // Resetting the reduxProduct quantity to 0
+      reduxProducts.forEach(product => {
+        dispatch(updateProductQuantity({ name: product.name, quantity: 0 }));
+      });
+      setCustomerName("");
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving sale data:", error);
-      return;
     }
-
-    // Resetting the reduxProduct quantity to 0
-    reduxProducts.forEach(product => {
-      dispatch(updateProductQuantity({ name: product.name, quantity: 0 }));
-    });
-    setCustomerName("");
-    setIsModalOpen(false);
   };
+  
 
-  // Effect to store customer name in local storage
   useEffect(() => {
     localStorage.setItem('customerName', customerName);
   }, [customerName]);
 
-  const handleOnchange = (e) => {
+  const handleOnChange = (e) => {
     setCustomerName(e.target.value);
   };
 
-  const incrementQuantity = (product) => {
-    const updatedQuantity = product.quantity + 1;
+  const incrementQuantity = async (product) => {
+    const originalProduct = await stallManagement.getProducts(stall.id).then(products => products.find(p => p.name === product.name));
     
-    dispatch(updateProductQuantity({ name: product.name, quantity: updatedQuantity }));
+    if (originalProduct.quantity > 0) {
+      const updatedQuantity = product.quantity + 1;
+      dispatch(updateProductQuantity({ name: product.name, quantity: updatedQuantity }));
+    } else {
+      alert(`${product.name} is out of stock!`);
+    }
   };
 
   const decrementQuantity = (product) => {
@@ -103,8 +131,6 @@ function POSSystem() {
       dispatch(updateProductQuantity({ name: product.name, quantity: updatedQuantity }));
     }
   };
-
-  const totalAmount = reduxProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
 
   return (
     <div className="flex min-h-screen bg-gray-50 p-6 ">
@@ -115,17 +141,14 @@ function POSSystem() {
         onClickExpensetaker={() => (navigate('/expense-tracker'))}
         onProductClick={() => (navigate('/product'))}
       />
-
       <RightPOS
         products={reduxProducts}
         incrementQuantity={incrementQuantity}
         decrementQuantity={decrementQuantity}
-        totalAmount={totalAmount}
         onConfirmSale={handleConfirmSale}
-        onChange={handleOnchange}
+        onChange={handleOnChange}
         customerName={customerName}
       />
-
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -137,7 +160,7 @@ function POSSystem() {
         <h2 className="text-xl font-bold mb-4">Confirm Sale</h2>
         <div className="mb-4">
           <h3 className="font-semibold">Customer Name: {customerName}</h3>
-          <h3 className="font-semibold">Total Amount: &#8377; {totalAmount}</h3>
+          <h3 className="font-semibold">Total Amount: &#8377; {reduxProducts.reduce((total, product) => total + (product.price * product.quantity), 0)}</h3>
           <ul>
             {reduxProducts.map((product, index) => (
               <li key={index}>
@@ -161,8 +184,6 @@ function POSSystem() {
           </button>
         </div>
       </Modal>
-
-
     </div>
   );
 }

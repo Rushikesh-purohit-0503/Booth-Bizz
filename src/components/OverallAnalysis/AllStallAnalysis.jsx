@@ -102,7 +102,7 @@ const AllStallsAnalysis = () => {
                                     <Tooltip />
                                     <Bar dataKey="totalSales" fill="#E57373" name="Sales" barSize={30}/>
                                     <Bar dataKey="totalExpenses" fill="	#722F37" name="Expenses" barSize={30} />
-                                    <Bar dataKey="revenue" fill="#E30B5C" name="Revenue" barSize={30}/>
+                                    {/* <Bar dataKey="revenue" fill="#E30B5C" name="Revenue" barSize={30}/> */}
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
