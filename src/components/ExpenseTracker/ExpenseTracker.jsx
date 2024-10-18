@@ -23,9 +23,15 @@ function ExpenseTracker() {
     const [expenseToDelete, setExpenseToDelete] = useState(null);
     const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount), 0);
 
+    const stallManagement = new StallManagement({uid:user.uid});
+   
+    useEffect(() => {
+        if (!authStatus) {
+            navigate('/signin');
+        }
+    }, [authStatus, navigate]);
     useEffect(() => {
         const fetchExpenses = async () => {
-            const stallManagement = new StallManagement({uid:user.uid});
             try {
                 const fetchedExpenses = await stallManagement.getExpenses(stall.id);
                 // Ensure fetchedExpenses is an array
@@ -38,14 +44,8 @@ function ExpenseTracker() {
         fetchExpenses();
     }, [stall.id, user]); // Include stall.id and user in the dependency array
 
-    useEffect(() => {
-        if (!authStatus) {
-            navigate('/signin');
-        }
-    }, [authStatus, navigate]);
-
     const handleAddExpense = async (data) => {
-        const stallManagement = new StallManagement(user);
+      
         try {
             await stallManagement.addExpense(stall.id, data);
             setExpenses((prev) => [...prev, data]);
@@ -56,7 +56,7 @@ function ExpenseTracker() {
     };
 
     const handleEditExpense = async (data) => {
-        const stallManagement = new StallManagement(user);
+
         try {
             await stallManagement.updateExpense(stall.id, editingExpense.id, data);
             const updatedExpenses = expenses.map(expense =>
@@ -71,7 +71,7 @@ function ExpenseTracker() {
     };
 
     const handleDeleteExpense = async () => {
-        const stallManagement = new StallManagement(user);
+     
         try {
             await stallManagement.deleteExpense(stall.id, expenseToDelete.id);
             const updatedExpenses = expenses.filter(expense => expense.id !== expenseToDelete.id);

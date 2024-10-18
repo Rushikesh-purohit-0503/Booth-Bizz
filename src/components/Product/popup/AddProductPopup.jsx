@@ -38,8 +38,9 @@ const AddProductPopup = ({ isOpen, onClose, onSubmit }) => {
             type="number" 
             id="quantity" 
             {...register("quantity", { 
-              required: "Quantity is required",
-              min: { value: 0, message: "Quantity must be positive" }
+              
+              min: { value: 0, message: "Quantity must be positive" },
+              max:{ value: 8796642138 , message: "Quantity is saved Automatically"} 
             })}
             className="mb-3 p-2 text-base border border-gray-300 rounded"
           />

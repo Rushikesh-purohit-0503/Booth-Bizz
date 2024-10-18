@@ -42,7 +42,7 @@ const Dashboard = () => {
             setStallDetails(updatedStalls);
 
             // Remove from local storage
-            // localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
+            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
 
             // Call the backend to delete the stall
             await stallManagement.deleteStall(stallId);
@@ -68,7 +68,7 @@ const Dashboard = () => {
             setStallDetails(updatedStalls);
 
             // Save the updated stalls to localStorage
-            // localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
+            localStorage.setItem('stallDetails', JSON.stringify(updatedStalls));
 
             setIsPopupVisible(false);
         } catch (error) {
