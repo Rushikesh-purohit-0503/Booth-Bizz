@@ -52,6 +52,7 @@ function ExpenseTracker() {
             await stallManagement.addExpense(stall.id, data);
             setExpenses((prev) => [...prev, data]);
             setIsPopupOpen(false);
+            navigate(0)
         } catch (error) {
             console.error("Error adding expense:", error);
         }

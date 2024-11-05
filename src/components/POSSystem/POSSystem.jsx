@@ -50,8 +50,8 @@ function POSSystem() {
     setIsModalOpen(true);
   };
 
+  const totalAmount = reduxProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
   const confirmSale = async () => {
-    const totalAmount = reduxProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
   
     const saleData = {
       customerName,
@@ -148,6 +148,7 @@ function POSSystem() {
         onConfirmSale={handleConfirmSale}
         onChange={handleOnChange}
         customerName={customerName}
+        totalAmount={totalAmount}
       />
       <Modal
         isOpen={isModalOpen}

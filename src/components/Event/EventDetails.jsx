@@ -212,8 +212,12 @@ const EventDetail = () => {
               )}
             </LineChart>
           </ResponsiveContainer>
+        <p className='text-red-500 mt-4'>*Note: The Predicted sales value may differ from actual sales value.</p>
         </div>
+
       </div>
+
+      
     </div>
   );
 };

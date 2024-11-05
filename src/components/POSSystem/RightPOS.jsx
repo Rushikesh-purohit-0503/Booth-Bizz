@@ -25,6 +25,7 @@ function RightPOS({ products, incrementQuantity, decrementQuantity, totalAmount,
           <thead className="text-sm text-gray-600 uppercase border-b bg-gray-50">
             <tr>
               <th className="py-3 px-6">Product Name</th>
+              
               <th className="py-3 px-6">Quantity</th>
               <th className="py-3 px-6">Amount</th>
             </tr>

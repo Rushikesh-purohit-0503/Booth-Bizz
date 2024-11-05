@@ -59,7 +59,7 @@ const Dashboard = () => {
             const updatedStalls = [...stallDetails, newStall].sort((a, b) => a.timestamp - b.timestamp);
             setStallDetails(updatedStalls); // Update state with sorted stalls
             localStorage.setItem('stallDetails', JSON.stringify(updatedStalls)); // Persist state
-         
+            navigate(0)
             setIsPopupVisible(false); // Close the popup
         } catch (error) {
             console.error('Error adding stall:', error);

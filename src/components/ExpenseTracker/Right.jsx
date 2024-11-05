@@ -1,6 +1,6 @@
 import React from 'react'
 import { PencilIcon, TrashIcon } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, Label } from 'recharts';
 
 
 function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}) {
@@ -72,6 +72,7 @@ function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}
                     </Pie>
                     <Tooltip />
                     <Legend />
+                    
                 </PieChart>
             </div>
 

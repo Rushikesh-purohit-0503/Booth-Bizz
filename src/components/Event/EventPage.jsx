@@ -224,7 +224,7 @@ function EventPage() {
 
       {isModalOpen && selectedEvent && (
         <div id="event-detail-modal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-3xl w-2/4 h-3/4 overflow-hidden relative">
+          <div className="bg-white p-6 rounded-3xl w-2/4 h-4/6 overflow-hidden relative">
             <span className="absolute top-2 right-2 text-2xl cursor-pointer" onClick={closeModal}>
               &times;
             </span>

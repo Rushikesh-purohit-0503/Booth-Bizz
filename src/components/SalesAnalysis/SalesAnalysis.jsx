@@ -227,7 +227,7 @@ const SalesAnalysis = () => {
                         </div>
                         <div className="bg-white p-4 rounded shadow">
                             <h2 className="text-lg text-gray-600 font-semibold">Revenue</h2>
-                            <p className="text-2xl text-gray-600 font-bold">₹{  (totalSales-totalSpent)<0? 0 : (totalSales-totalSpent)}</p>
+                            <p className="text-2xl text-gray-600 font-bold">₹{  (totalSales-totalSpent)}</p>
                         </div>
                     </div>
 
