@@ -24,6 +24,7 @@ function Header() {
     try {
       await authservice.logout();
       dispatch(logout());
+      localStorage.clear()
       navigate('/');
     } catch (error) {
       console.error('Error during logout', error);
@@ -106,13 +107,15 @@ function Header() {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/contact-us"
+                <button
+                  onClick={() => {
+                    scrollToSection('contact');
+                    handleLinkClick('contact');
+                  }}
                   className={`text-xl ${activeLink === 'contact' ? 'text-red-500' : 'text-gray-600'} hover:text-gray-950`}
-                  onClick={() => handleLinkClick('contact')}
                 >
                   Contact Us
-                </Link>
+                </button>
               </li>
             </>
           ) : (
