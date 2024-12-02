@@ -311,7 +311,7 @@ const SalesAnalysis = () => {
                         </div>
                     )}
 
-                    {deleteConfirmation.isOpen && (
+                    {/* {deleteConfirmation.isOpen && (
                         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                             <div className="bg-white p-6 rounded-lg shadow-lg">
                                 <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
@@ -332,7 +332,7 @@ const SalesAnalysis = () => {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>
