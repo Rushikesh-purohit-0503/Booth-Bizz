@@ -287,15 +287,15 @@ const SalesAnalysis = () => {
 
                     {selectedTransaction && (
                         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center" onClick={handleOutsideClick}>
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                                <button className="absolute top-3 right-3 text-gray-600 hover:text-gray-900" onClick={closeModal}>
+                            <div className="bg-white mt-20 p-6 rounded-lg shadow-lg w-1/3 relative">
+                                <button className="absolute top-1 right-3 text-gray-600 hover:text-gray-900" onClick={closeModal}>
                                     <XIcon size={24} />
                                 </button>
                                 <h2 className="text-xl font-bold mb-4">Transaction Details</h2>
                                 <p className="mb-2"><strong>Transaction ID:</strong> {selectedTransaction.transactionId}</p>
                                 <p className="mb-2"><strong>Customer Name:</strong> {selectedTransaction.customerName}</p>
                                 <p className="mb-2"><strong>Date:</strong> {selectedTransaction.date}</p>
-                                <h3 className= "font-bold text-lg mt-4 ">Products:</h3>
+                                <h3 className= "font-bold text-lg mt-4">Products:</h3>
                                 {selectedTransaction.products.map((product, index) => (
                                     <div key={index} className="mb-2">
                                         <p><strong>Product:</strong> {product.name}</p>
@@ -304,7 +304,7 @@ const SalesAnalysis = () => {
                                         <p><strong>Sales:</strong> ₹{product.sales}</p>
                                     </div>
                                 ))}
-                                <p className="mt-4"><strong>Total Quantity:</strong> {selectedTransaction.quantity}</p>
+                                <p className="mt-2"><strong>Total Quantity:</strong> {selectedTransaction.quantity}</p>
                                 <p className=""><strong>Total Sales:</strong> ₹{selectedTransaction.sales}</p>
                             </div>
                         </div>
