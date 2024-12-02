@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setProducts, updateProductQuantity } from '../../store/productSlice';
 import Modal from 'react-modal';
 import StallManagement from '../../firebase/Backend/stallManagement';
-import '../../styles/Pospopup.css';
+import '../../styles/POSpopup.css';
 
 function POSSystem() {
   const navigate = useNavigate();

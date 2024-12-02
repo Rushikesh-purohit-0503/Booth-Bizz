@@ -432,7 +432,7 @@ class StallManagement {
             ...stall,
             totalExpenses,
             totalSales,
-            revenue: (-1)*(totalSales - totalExpenses),
+            revenue: (-1)*(totalExpenses - totalSales),
           };
         })
       );
