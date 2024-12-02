@@ -304,8 +304,9 @@ const SalesAnalysis = () => {
                                         <p><strong>Sales:</strong> ₹{product.sales}</p>
                                     </div>
                                 ))}
+                                <div className='border-b-2'></div>
                                 <p className="mt-2"><strong>Total Quantity:</strong> {selectedTransaction.quantity}</p>
-                                <p className=""><strong>Total Sales:</strong> ₹{selectedTransaction.sales}</p>
+                                <p className=""><strong>Total Amount:</strong> ₹{selectedTransaction.sales}</p>
                             </div>
                         </div>
                     )}
