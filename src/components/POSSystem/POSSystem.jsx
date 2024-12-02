@@ -106,9 +106,9 @@ function POSSystem() {
   };
   
 
-  useEffect(() => {
-    localStorage.setItem('customerName', customerName);
-  }, [customerName]);
+  // useEffect(() => {
+  //   localStorage.setItem('customerName', customerName);
+  // }, [customerName]);
 
   const handleOnChange = (e) => {
     setCustomerName(e.target.value);

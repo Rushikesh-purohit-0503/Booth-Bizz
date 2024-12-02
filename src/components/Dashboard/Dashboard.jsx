@@ -50,13 +50,13 @@ const Dashboard = () => {
             const newStall = {
                 ...details,
                 image: imagePath,
-                timestamp: Date.now(), // Add timestamp for sorting
+                // Add timestamp for sorting
             };
 
             await stallManagement.addStall(newStall); // Backend save
             dispatch(reduxAddStall(newStall)); // Redux state update
 
-            const updatedStalls = [...stallDetails, newStall].sort((a, b) => a.timestamp - b.timestamp);
+            const updatedStalls = [...stallDetails, newStall].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             setStallDetails(updatedStalls); // Update state with sorted stalls
             localStorage.setItem('stallDetails', JSON.stringify(updatedStalls)); // Persist state
             navigate(0)
@@ -93,16 +93,18 @@ const Dashboard = () => {
             navigate('/signin'); // Redirect if not authenticated
         }
     }, [authStatus, navigate, stallManagement]);
-
+    const sortedStallData = [...stallDetails].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return (
         <>
-            <div className="fixed top-28 right-14 z-10">
-                <button
-                    className="py-2 px-4 rounded bg-red-300 text-black font-semibold hover:bg-red-400 transition duration-300"
-                    onClick={handleOverallAnalysisClick}
-                >
-                    Overall Stalls Analysis
-                </button>
+            <div className="relative w-full">
+                <div className="absolute top-4 right-4 z-10">
+                    <button
+                        className="py-2 px-4 rounded bg-red-300 text-black font-semibold hover:bg-red-400 transition duration-300"
+                        onClick={handleOverallAnalysisClick}
+                    >
+                        Overall Stalls Analysis
+                    </button>
+                </div>
             </div>
             <main className="flex flex-col items-center m-auto mt-10 max-w-6xl px-5">
                 <div className="grid mt-12 grid-cols-3 gap-5 w-full">
@@ -112,8 +114,8 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {stallDetails.map((details, index) => (
-                        
+                    {sortedStallData.map((details, index) => (
+
                         <DashboardImg
                             key={`stall-${details.id || index}`}
                             src={details.image}
@@ -123,7 +125,7 @@ const Dashboard = () => {
                             event={details.eventName}
                             onDelete={() => handleDeleteStall(details)}
                         />
-                        
+
                     ))}
                 </div>
 

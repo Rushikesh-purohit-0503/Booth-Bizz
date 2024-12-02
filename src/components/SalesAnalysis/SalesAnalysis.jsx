@@ -144,7 +144,7 @@ const SalesAnalysis = () => {
     const totalQuantitySold = saleData.reduce((sum, item) => sum + Number(item.quantity), 0);
 
     const displayedData = showMore ? aggregatedData : aggregatedData.slice(0, 10);
-
+    const sortedData=[...displayedData].sort((a,b)=>new Date(b.date)- new Date(a.date))
     const handleRowClick = (transaction) => {
         setSelectedTransaction(transaction);
     };
@@ -243,7 +243,7 @@ const SalesAnalysis = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {displayedData.map((item) => (
+                                    {sortedData.map((item) => (
                                         <tr key={item.transactionId} className="border-b last:border-b-0 cursor-pointer" onClick={() => handleRowClick(item)}>
                                             <td className="text-gray-600 py-3">{item.transactionId}</td>
                                             <td className="text-gray-600 py-3">{item.customerName}</td>
@@ -278,7 +278,7 @@ const SalesAnalysis = () => {
                                     <YAxis />
                                     <Tooltip formatter={(value) => [`₹${value}`, 'Sales']} />
                                     <Bar dataKey="sales" fill="#f89b94" barSize={30}>
-                                        <LabelList dataKey="name" position="top" />
+                                        <LabelList  position="top" />
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>

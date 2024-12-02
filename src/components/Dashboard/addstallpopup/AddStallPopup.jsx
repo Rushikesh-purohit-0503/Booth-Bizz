@@ -6,11 +6,11 @@ const AddStallPopup = ({ onSave, onCancel }) => {
   const [city, setCity] = useState('');
   const [eventName, setEventName] = useState('');
   const [productCategory, setProductCategory] = useState('');
-  const [imageFile, setImageFile] = useState(null); // State to hold the image file
+  // const [imageFile, setImageFile] = useState(null); // State to hold the image file
 
-  const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]); // Get the selected file
-  };
+  // const handleImageChange = (e) => {
+  //   setImageFile(e.target.files[0]); // Get the selected file
+  // };
 
   const handleSave = () => {
     // Create a stall object with the details
@@ -20,7 +20,7 @@ const AddStallPopup = ({ onSave, onCancel }) => {
       city,
       eventName,
       productCategory,
-      imageFile, // Include the image file in the details
+      // imageFile, // Include the image file in the details
     };
 
     // Call the onSave function with the stall details
@@ -32,7 +32,7 @@ const AddStallPopup = ({ onSave, onCancel }) => {
     setCity('');
     setEventName('');
     setProductCategory('');
-    setImageFile(null); // Clear the image file
+    // setImageFile(null); // Clear the image file
   };
 
   return (

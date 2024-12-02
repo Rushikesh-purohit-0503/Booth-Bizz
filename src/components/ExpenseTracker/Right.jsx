@@ -57,6 +57,7 @@ function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}
             <div className="mt-12">
                 <h2 className="text-xl text-gray-600 font-bold mb-4">Expense Distribution</h2>
                 <PieChart width={400} height={400}>
+                <Legend layout="horizontal" verticalAlign="top" align="center"/>
                     <Pie
                         data={data}
                         cx="50%"
@@ -71,7 +72,7 @@ function Right({expenses,totalAmount,onAddExpense,onEditExpense,onDeleteExpense}
                         ))}
                     </Pie>
                     <Tooltip />
-                    <Legend />
+                    
                     
                 </PieChart>
             </div>
