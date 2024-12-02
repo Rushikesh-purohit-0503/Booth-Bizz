@@ -171,7 +171,7 @@ function Header() {
             <Link to="/signin" className="px-4 py-2 border rounded">
               Sign In
             </Link>
-            <Link to="/signup" className="px-4 py-2 bg-red-300 rounded">
+            <Link to="/signup" className="px-4 py-2 bg-red-300 rounded">gi
               Sign Up
             </Link>
           </div>
