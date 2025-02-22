@@ -13,6 +13,8 @@ RUN npm install
 # Copy the rest of the app
 COPY . .
 COPY .env .env
+
+# Copy nginx config
 COPY nginx.conf  /usr/share/nginx/
 
 # Build the Vite app
