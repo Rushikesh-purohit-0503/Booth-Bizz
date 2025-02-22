@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import stall1 from '../../assets/stall-1.jpeg';
-import stall2 from '../../assets/stall-2.jpeg';
-import stall3 from '../../assets/stall-3.jpeg';
 import DashboardImg from './DashboardImage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStall as reduxAddStall, deleteStall as reduxDeleteStall, clickedStall } from '../../store/stallSlice';
 import AddStallPopup from './addstallpopup/AddStallPopup';
 import StallManagement from '../../firebase/Backend/stallManagement'; // Update this path
+const stall1 = "/assets/stall-1.jpeg";
+const stall2 = "/assets/stall-2.jpeg";
+const stall3 = "/assets/stall-3.jpeg";
 
 const Dashboard = () => {
     const [isPopupVisible, setIsPopupVisible] = useState(false);

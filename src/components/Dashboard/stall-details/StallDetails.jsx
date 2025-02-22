@@ -2,10 +2,10 @@ import React, { useEffect } from 'react'
 import Left from '../../ExpenseTracker/Left'
 // import Right from '../ExpenseTracker/Right'
 import { useNavigate } from 'react-router-dom'
-import stall1 from '../../../assets/stall-1.jpeg'; // Replace with the relevant stall image
+// Replace with the relevant stall image
 
-import { useDispatch, useSelector } from 'react-redux';
-import { setStallName } from '../../../store/stallSlice';
+import {  useSelector } from 'react-redux';
+
 import RightStallDetails from './RightStallDetails';
 
 

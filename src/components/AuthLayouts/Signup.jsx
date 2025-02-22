@@ -4,8 +4,8 @@ import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import AuthService from "../../firebase/Authentication";
 import { Link, useNavigate } from "react-router-dom";
-import googleImg from "../../assets/googleImg.png"
 import AuthHeader from "./AuthHeader";
+const  googleImg = "/assets/googleImg.png"
 const SignUp = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
     const dispatch = useDispatch();

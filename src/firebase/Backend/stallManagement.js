@@ -11,6 +11,8 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Ensure you have Firebase Storage imported
 import { storage } from "../conf"; // Import your Firebase storage configuration
 import { v4 as uuidv4 } from "uuid";
+
+
 class StallManagement {
   constructor(user) {
     this.user = user; // Store user to identify whose stall is being managed

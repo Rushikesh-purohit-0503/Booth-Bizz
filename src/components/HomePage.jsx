@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import HomeImg from "../assets/HomePage.png";
-import ExpenseImg from "../assets/events-image.png";
-import StallImg from "../assets/stall-image.png";
-import PosImg from "../assets/pos-image.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import ContactUs from "../components/Contact/ContactUs";
 import Service from './Services';
+const HomeImg = "/assets/HomePage.png";
+const ExpenseImg = "/assets/events-image.png";
+const StallImg = "/assets/stall-image.png";
+const PosImg = "/assets/pos-image.png";
 
 
 

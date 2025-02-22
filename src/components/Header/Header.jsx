@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { UserIcon } from 'lucide-react';
-import logoutImg from '../../assets/logout-icon.svg';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/authSlice';
 import authservice from '../../firebase/Authentication';
+const logoutImg = "/assets/logout-icon.svg";
+const profile = "/assets/user-circle.svg";
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status);
@@ -150,8 +152,8 @@ function Header() {
           <div className="relative" ref={dropdownRef}>
             <button onClick={toggleDropdown} className="flex items-center px-4 py-2">
               <div className="flex items-center gap-5 border-2 border-red-300 rounded-lg px-4 py-2">
-                <UserIcon className="text-red-300" size={20} />
                 {userData?.userName || 'User'}
+                <img src={profile} alt="Profile" className="w-8" />
               </div>
             </button>
             {dropdownOpen && (
@@ -160,9 +162,9 @@ function Header() {
                   onClick={handleLogout}
                   className="w-full text-left py-2 px-4 "
                 >
-                  Logout 
+                  Logout
                 </button>
-                  <div className='w-full text-left py-2 px-4  '><img src={logoutImg} alt="Logout" /></div>
+                <div className='w-full text-left py-2 px-4  '><img src={logoutImg} alt="Logout" /></div>
               </div>
             )}
           </div>

@@ -2,9 +2,10 @@ import React,{useState,useEffect} from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import ExpenseImg from "../assets/events-image.png"
-import StallImg from "../assets/stall-image.png"
-import PosImg from "../assets/Pos-image.png"
+const ExpenseImg = "/assets/events-image.png";
+const StallImg = "/assets/stall-image.png";
+const PosImg = "/assets/pos-image.png";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
