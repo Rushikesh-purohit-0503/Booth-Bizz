@@ -1,6 +1,6 @@
 
 services:
-  booth-bizz:
+  web:
     build: .
     ports:
       - "80:80"
