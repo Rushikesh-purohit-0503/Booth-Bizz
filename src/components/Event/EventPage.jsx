@@ -5,6 +5,43 @@ import { collection, getDocs, query, limit, startAfter } from 'firebase/firestor
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase/conf';
 
+
+// IndexedDB Utility Functions
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("EventCacheDB", 1);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains("events")) {
+        db.createObjectStore("events", { keyPath: "id" });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+const saveEventsToDB = async (events) => {
+  const db = await openDB();
+  const tx = db.transaction("events", "readwrite");
+  const store = tx.objectStore("events");
+
+  events.forEach((event) => store.put(event));
+  return tx.complete;
+};
+
+const getEventsFromDB = async () => {
+  const db = await openDB();
+  const tx = db.transaction("events", "readonly");
+  const store = tx.objectStore("events");
+
+  return new Promise((resolve) => {
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+  });
+};
 function EventPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState('City');
@@ -20,6 +57,17 @@ function EventPage() {
   const fetchEvents = useCallback(async (lastDoc = null) => {
     setIsFetching(true);
     try {
+      // Load cached events first
+      const cachedEvents = await getEventsFromDB();
+
+      if (cachedEvents.length > 0 && !lastDoc) {
+        setEvents(cachedEvents);
+        setFilteredEvents(cachedEvents);
+        setIsFetching(false);
+        return;
+      }
+
+      // If no cache or loading more, fetch from Firebase
       const eventsQuery = lastDoc
         ? query(collection(db, 'events'), startAfter(lastDoc), limit(10))
         : query(collection(db, 'events'), limit(14));
@@ -33,13 +81,17 @@ function EventPage() {
         return { id: doc.id, ...eventData, imageUrl: imgUrl };
       }));
 
-      // Ensure uniqueness by creating a map with event IDs as keys
-      const eventsMap = new Map();
-      [...events, ...eventsData].forEach(event => eventsMap.set(event.id, event));
+      // Save new events to IndexedDB
+      await saveEventsToDB(eventsData);
 
-      setEvents(Array.from(eventsMap.values()));
-      setFilteredEvents(Array.from(eventsMap.values()));
+      // Remove duplicates
+      const eventsMap = new Map([...events, ...eventsData].map(event => [event.id, event]));
+      const updatedEvents = Array.from(eventsMap.values());
+
+      setEvents(updatedEvents);
+      setFilteredEvents(updatedEvents);
       setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+
     } catch (error) {
       console.error('Error fetching events: ', error);
     }
