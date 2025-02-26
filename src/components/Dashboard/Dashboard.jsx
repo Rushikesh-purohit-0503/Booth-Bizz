@@ -21,20 +21,20 @@ const Dashboard = () => {
 
     const Img = [
         { src: stall1, title: 'Stall 1' },
-        { src: stall2, title: 'Stall 2' },
         { src: stall3, title: 'Stall 3' },
     ];
 
     // Memoize the StallManagement instance to prevent unnecessary re-instantiation
     const stallManagement = useMemo(() => new StallManagement({ uid }), [uid]);
-
+ 
     const handleAddStallClick = () => setIsPopupVisible(true);
 
     const handleDeleteStall = async (stall) => {
         try {
             const stallId = stall.id;
-            await stallManagement.deleteStall(stallId); // Backend deletion
-            dispatch(reduxDeleteStall(stallId)); // Redux state update
+            console.log(stall.stallName)
+            dispatch(reduxDeleteStall(stall.stallName));
+            await stallManagement.deleteStall(stallId);
 
             const updatedStalls = stallDetails.filter((s) => s.id !== stallId);
             setStallDetails(updatedStalls); // Update local state
@@ -53,32 +53,25 @@ const Dashboard = () => {
                 // Add timestamp for sorting
             };
 
-            await stallManagement.addStall(newStall); // Backend save
-            dispatch(reduxAddStall(newStall)); // Redux state update
-
-            const updatedStalls = [...stallDetails, newStall].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            const stallId = await stallManagement.addStall(newStall);
+            console.log(stallId)
+            const newStallwithId = {...newStall, id:stallId.toString()}
+            console.log(newStallwithId) // Backend save
+            const updatedStalls = [...stallDetails, newStallwithId]
             setStallDetails(updatedStalls); // Update state with sorted stalls
             localStorage.setItem('stallDetails', JSON.stringify(updatedStalls)); // Persist state
-            navigate(0)
+            dispatch(reduxAddStall(newStallwithId)); // Redux state update
             setIsPopupVisible(false); // Close the popup
         } catch (error) {
             console.error('Error adding stall:', error);
         }
     };
-
-    const handleStallClick = (stall) => {
-        dispatch(clickedStall(stall)); // Store clicked stall in Redux
-        navigate('/stall-details'); // Navigate to details page
-    };
-
-    const handleOverallAnalysisClick = () => navigate('/overall-stalls-analysis');
-    const handleCancelPopup = () => setIsPopupVisible(false);
-
     useEffect(() => {
         const fetchStalls = async () => {
             try {
                 const fetchedStalls = await stallManagement.getStalls(); // Fetch from backend
-                const sortedStalls = fetchedStalls.sort((a, b) => a.timestamp - b.timestamp); // Sort by timestamp
+                console.log(fetchedStalls)
+                const sortedStalls = fetchedStalls.sort((a, b) => a.createdAt - b.createdAt); // Sort by timestamp
                 setStallDetails(sortedStalls); // Update local state
 
                 localStorage.setItem('stallDetails', JSON.stringify(sortedStalls)); // Persist state
@@ -93,6 +86,15 @@ const Dashboard = () => {
             navigate('/signin'); // Redirect if not authenticated
         }
     }, [authStatus, navigate, stallManagement]);
+    const handleStallClick = (stall) => {
+        dispatch(clickedStall(stall)); // Store clicked stall in Redux
+        navigate('/stall-details'); // Navigate to details page
+    };
+
+    const handleOverallAnalysisClick = () => navigate('/overall-stalls-analysis');
+    const handleCancelPopup = () => setIsPopupVisible(false);
+
+
     const sortedStallData = [...stallDetails].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return (
         <>

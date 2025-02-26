@@ -7,7 +7,7 @@ const EventCard = ({ src, event, onShowDetails }) => (
   >
     <img src={src} alt={event.eventName} className="w-full h-40 object-cover" />
     <div className="p-4">
-      <hr className="mb-2" />
+      <hr className="mb-2"/>
       <h3 className="text-xl font-semibold text-black">{event.eventName}</h3>
       <p className="text-gray-600">{event.location}</p>
       <p className="text-gray-600">{event.date}</p>

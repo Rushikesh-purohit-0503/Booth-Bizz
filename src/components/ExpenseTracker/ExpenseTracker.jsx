@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import DeleteExpensePopup from './PopUp/DeleteExpensePopup';
 import EditExpensePopup from './PopUp/EditExpensePopup';
 import AddExpensePopup from './PopUp/AddExpensePopup';
@@ -23,15 +23,15 @@ function ExpenseTracker() {
     const [expenseToDelete, setExpenseToDelete] = useState(null);
     const totalAmount = expenses.reduce((total, expense) => total + Number(expense.amount), 0);
 
-    const stallManagement = useMemo(()=>new StallManagement({uid:user.uid}),[user.uid]) 
-    
+    const stallManagement = useMemo(() => new StallManagement({ uid: user.uid }), [user.uid])
+
     useEffect(() => {
-        
+
         if (!authStatus) {
             navigate('/signin');
         }
     }, [authStatus, navigate]);
-    
+
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
@@ -49,17 +49,17 @@ function ExpenseTracker() {
     const handleAddExpense = async (data) => {
 
         try {
-            await stallManagement.addExpense(stall.id, data);
-            setExpenses((prev) => [...prev, data]);
+            const expanseId = await stallManagement.addExpense(stall.id, data);
+            const DatawithId = { ...data, id: expanseId.toString() }
+            setExpenses((prev) => [...prev, DatawithId]);
             setIsPopupOpen(false);
-            navigate(0)
         } catch (error) {
             console.error("Error adding expense:", error);
         }
     };
 
     const handleEditExpense = async (data) => {
-       
+
         try {
             await stallManagement.updateExpense(stall.id, editingExpense.id, data);
             const updatedExpenses = expenses.map(expense =>
@@ -79,7 +79,7 @@ function ExpenseTracker() {
             await stallManagement.deleteExpense(stall.id, expenseToDelete.id);
             const updatedExpenses = expenses.filter(expense => expense.id !== expenseToDelete.id);
             setExpenses(updatedExpenses);
-            
+
             setIsDeletePopupOpen(false);
             setExpenseToDelete(null);
         } catch (error) {

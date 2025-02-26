@@ -104,7 +104,9 @@ class StallManagement {
         stallId,
         "expenses"
       );
-      await addDoc(expenseRef, { date, category, description, amount });
+      const addedExpanse = await addDoc(expenseRef, { date, category, description, amount });
+      console.log(addedExpanse)
+      return addedExpanse.id
       console.log("Expense added successfully.");
     } catch (error) {
       console.error("Error adding expense", error);
