@@ -4,7 +4,7 @@ import EventCard from './EventCard';
 import { collection, getDocs, query, limit, startAfter } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase/conf';
-
+import { X } from 'lucide-react';
 
 // IndexedDB Utility Functions
 const openDB = () => {
@@ -277,8 +277,8 @@ function EventPage() {
       {isModalOpen && selectedEvent && (
         <div id="event-detail-modal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-3xl w-2/4 h-50 overflow-hidden relative">
-            <span className="absolute top-2 right-2 text-2xl cursor-pointer" onClick={closeModal}>
-              &times;
+            <span className="absolute top-2 right-1 text-4xl cursor-pointer" onClick={closeModal}>
+              <X color='grey'/>
             </span>
             <img
               src={selectedEvent.imageUrl}
